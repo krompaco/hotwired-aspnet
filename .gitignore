@@ -1,0 +1,8 @@
+_ReSharper.Caches/
+.vs/
+*.csproj.user
+bin
+obj
+node_modules
+*.pubxml.user
+src/WebApp/wwwroot/styles.css

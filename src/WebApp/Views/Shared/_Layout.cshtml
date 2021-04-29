@@ -1,0 +1,32 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - WebApp</title>
+    <link href="/styles.css" rel="stylesheet" asp-append-version="true" />
+    <script src="/main.js" async asp-append-version="true"></script>
+</head>
+<body class="bg-gray-100 text-gray-900">
+<div class="mx-4 mt-4" role="navigation">
+    <h1><a class="" asp-area="" asp-controller="Home" asp-action="Index">WebApp</a></h1>
+    <div class="">
+        <ul class="">
+            <li class="">
+                <a class="" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+            </li>
+            <li class="">
+                <a class="" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            </li>
+        </ul>
+    </div>
+</div>
+<div role="main" class="mx-4 mt-10">
+    @RenderBody()
+</div>
+<div role="contentinfo" class="mx-4 mt-12 mb-4">
+    <h2 data-controller="example"></h2>
+    <p>&copy; @DateTime.Now.Year - WebApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a></p>
+</div>
+</body>
+</html>
