@@ -26,7 +26,7 @@ namespace WebApp.Controllers
         [HttpPost]
         public IActionResult Index(string mainBody)
         {
-            ViewData["Status"] = $"Form value:\r\n{mainBody}";
+            ViewData["Status"] = $"Posted form value:\r\n{mainBody}";
             return View();
         }
 
