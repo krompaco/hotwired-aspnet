@@ -5,4 +5,3 @@ bin
 obj
 node_modules
 *.pubxml.user
-src/WebApp/wwwroot/styles.css

@@ -9,21 +9,21 @@
 
 <turbo-frame id="form-area">
     <div class="bg-green-200 min-h-screen p-4 mt-10">
-        <h2 class="font-semibold tracking-tight text-2xl">Test form at @DateTime.Now</h2>
+        <h2 class="font-bold tracking-tight text-2xl">Test form at @DateTime.Now</h2>
 
         @if (ViewData["Status"] == null)
         {
             <form action="/" method="post" class="mt-4">
                 <label for="mainbody" class="block">Main body</label>
                 <textarea class="mt-2 w-full h-28" required name="mainbody" id="mainbody"></textarea>
-                <button class="mt-2 inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" type="submit">Save text</button>
+                <button class="mt-2 inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" type="submit">Save text</button>
             </form>
         }
         else
         {
             <pre class="block mt-4">@ViewData["Status"]</pre>
 
-            <a href="/?bust=@Guid.NewGuid().ToString("N")" class="mt-2 inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Try again</a>
+            <a href="/?bust=@Guid.NewGuid().ToString("N")" class="mt-2 inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Try again</a>
         }
     </div>
 </turbo-frame>
