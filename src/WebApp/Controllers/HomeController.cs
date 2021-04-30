@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using WebApp.Models;
 
@@ -18,6 +19,7 @@ namespace WebApp.Controllers
             this.logger = logger;
         }
 
+        [HttpGet]
         public IActionResult Index()
         {
             return View();
@@ -30,11 +32,36 @@ namespace WebApp.Controllers
             return View();
         }
 
+        [HttpGet]
         public IActionResult Privacy()
         {
             return View();
         }
 
+        [HttpGet]
+        public IActionResult Slow()
+        {
+            Thread.Sleep(2000);
+
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult Menu(int menuState)
+        {
+            switch (menuState)
+            {
+                case 1:
+                    ViewData["MenuState"] = menuState.ToString();
+                    break;
+                default:
+                    break;
+            }
+
+            return View();
+        }
+
+        [HttpGet]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
