@@ -8,7 +8,7 @@ module.exports = {
 		filename: 'main.js',
 		path: path.resolve(__dirname, './src/WebApp/wwwroot/')
 	},
-	mode: process.env.NODE_ENV,
+	mode: 'production', ////process.env.NODE_ENV,
 	devtool: 'source-map',
 	module: {
 		rules: [

@@ -10,7 +10,7 @@
 <body class="bg-gray-100 text-gray-900">
 <turbo-frame id="main-menu">
     <div class="mx-4 mt-4" role="navigation">
-        <h1 class="font-extrabold tracking-tight text-5xl"><a class="" asp-area="" asp-controller="Home" asp-action="Index">WebApp</a></h1>
+        <h1 class="font-extrabold tracking-tight text-5xl"><a class="" data-turbo-frame="_top" asp-area="" asp-controller="Home" asp-action="Index">WebApp</a></h1>
         @if (ViewData["MenuState"] == null)
         {
             <div class="mt-2">
