@@ -2,13 +2,14 @@
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using WebApp.WebSocketManager;
 
 namespace WebApp
 {
     public class StreamTestHandler : WebSocketHandler
     {
-        public StreamTestHandler(ConnectionManager webSocketConnectionManager) : base(webSocketConnectionManager)
+        public StreamTestHandler(ConnectionManager webSocketConnectionManager, IHttpContextAccessor httpContextAccessor) : base(webSocketConnectionManager, httpContextAccessor)
         {
         }
 

@@ -3,6 +3,7 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace WebApp.WebSocketManager
 {
@@ -10,7 +11,7 @@ namespace WebApp.WebSocketManager
     {
         protected ConnectionManager WebSocketConnectionManager { get; set; }
 
-        public WebSocketHandler(ConnectionManager webSocketConnectionManager)
+        public WebSocketHandler(ConnectionManager webSocketConnectionManager, IHttpContextAccessor httpContextAccessor)
         {
             WebSocketConnectionManager = webSocketConnectionManager;
         }
@@ -22,7 +23,14 @@ namespace WebApp.WebSocketManager
 
         public virtual async Task OnDisconnected(WebSocket socket)
         {
-            await WebSocketConnectionManager.RemoveSocket(WebSocketConnectionManager.GetId(socket));
+            try
+            {
+                await WebSocketConnectionManager.RemoveSocket(WebSocketConnectionManager.GetId(socket));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
 
         public async Task SendMessageAsync(WebSocket socket, string message)

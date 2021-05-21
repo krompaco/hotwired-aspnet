@@ -6,6 +6,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using WebApp.Extensions;
 using WebApp.Models;
 
 namespace WebApp.Controllers
@@ -16,15 +18,20 @@ namespace WebApp.Controllers
 
         private readonly StreamTestHandler streamTestHandler;
 
-        public HomeController(ILogger<HomeController> logger, StreamTestHandler streamTestHandler)
+        private readonly IHttpContextAccessor httpContextAccessor;
+
+        public HomeController(ILogger<HomeController> logger, StreamTestHandler streamTestHandler, IHttpContextAccessor httpContextAccessor)
         {
             this.logger = logger;
             this.streamTestHandler = streamTestHandler;
+            this.httpContextAccessor = httpContextAccessor;
         }
 
         [HttpGet]
         public IActionResult Index()
         {
+            this.httpContextAccessor.HttpContext.Session.GetOrCreateSessionId();
+
             return View();
         }
 
