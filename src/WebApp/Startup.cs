@@ -8,8 +8,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.WebSockets;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using Westwind.AspNetCore.LiveReload;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using WebApp.WebSocketManager;
 
 namespace WebApp
 {
@@ -25,12 +31,14 @@ namespace WebApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddLiveReload(config =>
-            {
-                config.LiveReloadEnabled = true;
-            });
+            ////services.AddLiveReload(config =>
+            ////{
+            ////    config.LiveReloadEnabled = true;
+            ////});
 
-            services.AddControllersWithViews().AddRazorRuntimeCompilation();
+            services.AddWebSocketManager();
+
+            services.AddControllersWithViews();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -43,18 +51,29 @@ namespace WebApp
             else
             {
                 app.UseExceptionHandler("/Home/Error");
+
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
             app.UseHttpsRedirection();
 
-            app.UseLiveReload();
+            ////app.UseLiveReload();
 
             app.UseStaticFiles();
 
             app.UseRouting();
 
             app.UseAuthorization();
+
+            var webSocketOptions = new WebSocketOptions
+            {
+                KeepAliveInterval = TimeSpan.FromSeconds(120),
+            };
+            app.UseWebSockets(webSocketOptions);
+
+            var serviceScopeFactory = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>();
+            var serviceProvider = serviceScopeFactory.CreateScope().ServiceProvider;
+            app.MapWebSocketManager("/streamtesthandler", serviceProvider.GetService<StreamTestHandler>());
 
             app.UseEndpoints(endpoints =>
             {

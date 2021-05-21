@@ -14,9 +14,12 @@ namespace WebApp.Controllers
     {
         private readonly ILogger<HomeController> logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        private readonly StreamTestHandler streamTestHandler;
+
+        public HomeController(ILogger<HomeController> logger, StreamTestHandler streamTestHandler)
         {
             this.logger = logger;
+            this.streamTestHandler = streamTestHandler;
         }
 
         [HttpGet]
@@ -33,8 +36,16 @@ namespace WebApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Privacy()
+        public async Task<IActionResult> Privacy()
         {
+            await streamTestHandler.SendMessageToAllAsync(@"<turbo-stream action=""replace"" target=""stream-test"">
+    <template>
+        <div id=""stream-test"">
+            Stream Test replaced from Privacy page WebSocket send
+        </div>
+    </template>
+</turbo-stream>");
+
             return View();
         }
 

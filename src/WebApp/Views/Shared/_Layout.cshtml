@@ -11,6 +11,7 @@
 <turbo-frame id="main-menu">
     <div class="mx-4 mt-4" role="navigation">
         <h1 class="font-extrabold tracking-tight text-5xl"><a class="" data-turbo-frame="_top" asp-area="" asp-controller="Home" asp-action="Index">WebApp</a></h1>
+
         @if (ViewData["MenuState"] == null)
         {
             <div class="mt-2">
@@ -36,6 +37,11 @@
         }
     </div>
 </turbo-frame>
+
+<div class="mx-4 mt-10">
+    <div id="stream-test">Stream Test original</div>
+</div>
+
 <div role="main" class="mx-4 mt-10">
     @RenderBody()
 </div>
@@ -43,5 +49,6 @@
     <h2 class="font-bold tracking-tight text-xl" data-controller="example"></h2>
     <p class="mt-2">&copy; @DateTime.Now.Year - WebApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a></p>
 </div>
+
 </body>
 </html>
