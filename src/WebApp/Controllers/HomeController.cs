@@ -1,10 +1,13 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebApp.Extensions;
 using WebApp.Models;
+using WebApp.TurboStreams;
 
 namespace WebApp.Controllers
 {
@@ -32,6 +35,19 @@ namespace WebApp.Controllers
         [HttpPost]
         public IActionResult Index(string mainBody)
         {
+            if (this.Request.GetTypedHeaders().Accept.Any(
+                x => x.ToString().Equals(TurboStreamMessage.MimeType, StringComparison.OrdinalIgnoreCase)))
+            {
+                var message = new TurboStreamMessage
+                {
+                    Action = TurboStreamAction.Replace,
+                    Target = "stream-test",
+                    TemplateInnerHtml = @"<div id=""stream-test"">Stream Test replaced " + DateTime.Now.ToString("T") + " from " + TurboStreamMessage.MimeType + " response</div>"
+                };
+
+                return this.Content(message.ToString(), TurboStreamMessage.MimeType);
+            }
+
             this.ViewData["Status"] = $"Posted form value:\r\n{mainBody}";
             return this.View();
         }
@@ -39,13 +55,14 @@ namespace WebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Privacy()
         {
-            await this.streamTestHandler.SendMessageToAllAsync(@"<turbo-stream action=""replace"" target=""stream-test"">
-    <template>
-        <div id=""stream-test"">
-            Stream Test replaced from Privacy page WebSocket send
-        </div>
-    </template>
-</turbo-stream>");
+            var message = new TurboStreamMessage
+            {
+                Action = TurboStreamAction.Replace,
+                Target = "stream-test",
+                TemplateInnerHtml = @"<div id=""stream-test"">Stream Test replaced " + DateTime.Now.ToString("T") + " from Privacy page WebSocket send</div>"
+            };
+
+            await this.streamTestHandler.SendMessageToAllAsync(message.ToString());
 
             return this.View();
         }

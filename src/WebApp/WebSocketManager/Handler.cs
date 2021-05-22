@@ -13,18 +13,18 @@ namespace WebApp.WebSocketManager
 
         protected ConnectionManager WebSocketConnectionManager { get; set; }
 
-#pragma warning disable 1998
         public virtual async Task OnConnected(WebSocket socket)
-#pragma warning restore 1998
         {
             this.WebSocketConnectionManager.AddSocket(socket);
+
+            await this.SendMessageAsync(socket, $"Socket connected").ConfigureAwait(false);
         }
 
         public virtual async Task OnDisconnected(WebSocket socket)
         {
             try
             {
-                await this.WebSocketConnectionManager.RemoveSocket(this.WebSocketConnectionManager.GetId(socket));
+                await this.WebSocketConnectionManager.RemoveSocket(this.WebSocketConnectionManager.GetId(socket)).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -39,16 +39,17 @@ namespace WebApp.WebSocketManager
                 return;
             }
 
+            var encodedMessage = Encoding.UTF8.GetBytes(message);
             await socket.SendAsync(
-               buffer: new ArraySegment<byte>(array: Encoding.ASCII.GetBytes(message), offset: 0, count: message.Length),
-               messageType: WebSocketMessageType.Text,
-               endOfMessage: true,
-               cancellationToken: CancellationToken.None);
+                buffer: new ArraySegment<byte>(array: encodedMessage, offset: 0, count: encodedMessage.Length),
+                messageType: WebSocketMessageType.Text,
+                endOfMessage: true,
+                cancellationToken: CancellationToken.None).ConfigureAwait(false);
         }
 
         public async Task SendMessageAsync(string socketId, string message)
         {
-            await this.SendMessageAsync(this.WebSocketConnectionManager.GetSocketById(socketId), message);
+            await this.SendMessageAsync(this.WebSocketConnectionManager.GetSocketById(socketId), message).ConfigureAwait(false);
         }
 
         public async Task SendMessageToAllAsync(string message)
@@ -57,7 +58,7 @@ namespace WebApp.WebSocketManager
             {
                 if (pair.Value.State == WebSocketState.Open)
                 {
-                    await this.SendMessageAsync(pair.Value, message);
+                    await this.SendMessageAsync(pair.Value, message).ConfigureAwait(false);
                 }
             }
         }

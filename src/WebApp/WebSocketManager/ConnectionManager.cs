@@ -49,10 +49,15 @@ namespace WebApp.WebSocketManager
                 return;
             }
 
+            if (socket.State != WebSocketState.Open)
+            {
+                return;
+            }
+
             await socket.CloseAsync(
                 closeStatus: WebSocketCloseStatus.NormalClosure,
                 statusDescription: "Closed by the ConnectionManager",
-                cancellationToken: CancellationToken.None);
+                cancellationToken: CancellationToken.None).ConfigureAwait(false);
         }
     }
 }

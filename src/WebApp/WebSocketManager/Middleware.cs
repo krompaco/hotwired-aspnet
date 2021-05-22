@@ -27,21 +27,21 @@ namespace WebApp.WebSocketManager
                 return;
             }
 
-            var socket = await context.WebSockets.AcceptWebSocketAsync();
-            await this.WebSocketHandler.OnConnected(socket);
+            var socket = await context.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
+            await this.WebSocketHandler.OnConnected(socket).ConfigureAwait(false);
 
             await this.Receive(socket, async (result, buffer) =>
             {
                 switch (result.MessageType)
                 {
                     case WebSocketMessageType.Text:
-                        await this.WebSocketHandler.ReceiveAsync(socket, result, buffer);
+                        await this.WebSocketHandler.ReceiveAsync(socket, result, buffer).ConfigureAwait(false);
                         return;
                     case WebSocketMessageType.Close:
-                        await this.WebSocketHandler.OnDisconnected(socket);
+                        await this.WebSocketHandler.OnDisconnected(socket).ConfigureAwait(false);
                         return;
                 }
-            });
+            }).ConfigureAwait(false);
 
             // TODO: Investigate the Kestrel exception thrown when this is the last middleware
             ////await _next.Invoke(context);
@@ -57,7 +57,7 @@ namespace WebApp.WebSocketManager
                 {
                     var result = await socket.ReceiveAsync(
                         buffer: new ArraySegment<byte>(buffer),
-                        cancellationToken: CancellationToken.None);
+                        cancellationToken: CancellationToken.None).ConfigureAwait(false);
 
                     handleMessage(result, buffer);
                 }

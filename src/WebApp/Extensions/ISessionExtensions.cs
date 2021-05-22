@@ -16,7 +16,15 @@ namespace WebApp.Extensions
             }
 
             id = Guid.NewGuid().ToString("D");
-            session.SetString(Key, id);
+
+            try
+            {
+                session.SetString(Key, id);
+            }
+            catch (Exception e)
+            {
+                // Ignored
+            }
 
             return id;
         }
