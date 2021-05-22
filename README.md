@@ -28,12 +28,13 @@ I recommend doing `npm run dev` and then going to `src/WebApp/` and starting dot
 dotnet watch run
 ```
 
-Now you should have hot browser reload courtesy of _Westwind.AspnetCore.LiveReload_ for changes both in MVC project and Tailwind or JavaScript files.
-
-Reference links:
+References used:
 
 * https://hotwire.dev/
-* https://github.com/RickStrahl/Westwind.AspnetCore.LiveReload
 * https://tailwindcss.com/
+* https://django-turbo-response.readthedocs.io/en/latest/#channels
+* https://docs.microsoft.com/en-us/aspnet/core/fundamentals/websockets?view=aspnetcore-5.0
+* https://radu-matei.com/blog/aspnet-core-websockets-middleware/
+* https://github.com/radu-matei/websocket-manager/
 
 Good luck!

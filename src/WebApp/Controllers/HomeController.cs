@@ -1,12 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using WebApp.Extensions;
 using WebApp.Models;
 
@@ -14,15 +10,12 @@ namespace WebApp.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> logger;
-
         private readonly StreamTestHandler streamTestHandler;
 
         private readonly IHttpContextAccessor httpContextAccessor;
 
-        public HomeController(ILogger<HomeController> logger, StreamTestHandler streamTestHandler, IHttpContextAccessor httpContextAccessor)
+        public HomeController(StreamTestHandler streamTestHandler, IHttpContextAccessor httpContextAccessor)
         {
-            this.logger = logger;
             this.streamTestHandler = streamTestHandler;
             this.httpContextAccessor = httpContextAccessor;
         }
@@ -30,22 +23,23 @@ namespace WebApp.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            this.httpContextAccessor.HttpContext.Session.GetOrCreateSessionId();
+            // TODO: Fix better way to give visitor a SessionId
+            this.httpContextAccessor.HttpContext?.Session.GetOrCreateSessionId();
 
-            return View();
+            return this.View();
         }
 
         [HttpPost]
         public IActionResult Index(string mainBody)
         {
-            ViewData["Status"] = $"Posted form value:\r\n{mainBody}";
-            return View();
+            this.ViewData["Status"] = $"Posted form value:\r\n{mainBody}";
+            return this.View();
         }
 
         [HttpGet]
         public async Task<IActionResult> Privacy()
         {
-            await streamTestHandler.SendMessageToAllAsync(@"<turbo-stream action=""replace"" target=""stream-test"">
+            await this.streamTestHandler.SendMessageToAllAsync(@"<turbo-stream action=""replace"" target=""stream-test"">
     <template>
         <div id=""stream-test"">
             Stream Test replaced from Privacy page WebSocket send
@@ -53,7 +47,7 @@ namespace WebApp.Controllers
     </template>
 </turbo-stream>");
 
-            return View();
+            return this.View();
         }
 
         [HttpGet]
@@ -61,7 +55,7 @@ namespace WebApp.Controllers
         {
             Thread.Sleep(2000);
 
-            return View();
+            return this.View();
         }
 
         [HttpGet]
@@ -70,20 +64,20 @@ namespace WebApp.Controllers
             switch (menuState)
             {
                 case 1:
-                    ViewData["MenuState"] = menuState.ToString();
+                    this.ViewData["MenuState"] = menuState.ToString();
                     break;
                 default:
                     break;
             }
 
-            return View();
+            return this.View();
         }
 
         [HttpGet]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return this.View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? this.HttpContext.TraceIdentifier });
         }
     }
 }

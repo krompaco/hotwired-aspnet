@@ -8,42 +8,43 @@ namespace WebApp.WebSocketManager
 {
     public class WebSocketManagerMiddleware
     {
-        private readonly RequestDelegate _next;
-        private WebSocketHandler _webSocketHandler { get; set; }
+        private readonly RequestDelegate next;
 
-        public WebSocketManagerMiddleware(RequestDelegate next, 
-                                          WebSocketHandler webSocketHandler)
+        public WebSocketManagerMiddleware(
+            RequestDelegate next,
+            WebSocketHandler webSocketHandler)
         {
-            _next = next;
-            _webSocketHandler = webSocketHandler;
+            this.next = next;
+            this.WebSocketHandler = webSocketHandler;
         }
+
+        private WebSocketHandler WebSocketHandler { get; }
 
         public async Task Invoke(HttpContext context)
         {
-            if(!context.WebSockets.IsWebSocketRequest)
-                return;
-            
-            var socket = await context.WebSockets.AcceptWebSocketAsync();
-            await _webSocketHandler.OnConnected(socket);
-            
-            await Receive(socket, async(result, buffer) =>
+            if (!context.WebSockets.IsWebSocketRequest)
             {
-                if(result.MessageType == WebSocketMessageType.Text)
-                {
-                    await _webSocketHandler.ReceiveAsync(socket, result, buffer);
-                    return;
-                }
+                return;
+            }
 
-                else if(result.MessageType == WebSocketMessageType.Close)
-                {
-                    await _webSocketHandler.OnDisconnected(socket);
-                    return;
-                }
+            var socket = await context.WebSockets.AcceptWebSocketAsync();
+            await this.WebSocketHandler.OnConnected(socket);
 
+            await this.Receive(socket, async (result, buffer) =>
+            {
+                switch (result.MessageType)
+                {
+                    case WebSocketMessageType.Text:
+                        await this.WebSocketHandler.ReceiveAsync(socket, result, buffer);
+                        return;
+                    case WebSocketMessageType.Close:
+                        await this.WebSocketHandler.OnDisconnected(socket);
+                        return;
+                }
             });
-            
-            //TODO - investigate the Kestrel exception thrown when this is the last middleware
-            //await _next.Invoke(context);
+
+            // TODO: Investigate the Kestrel exception thrown when this is the last middleware
+            ////await _next.Invoke(context);
         }
 
         private async Task Receive(WebSocket socket, Action<WebSocketReceiveResult, byte[]> handleMessage)
@@ -54,7 +55,8 @@ namespace WebApp.WebSocketManager
             {
                 try
                 {
-                    var result = await socket.ReceiveAsync(buffer: new ArraySegment<byte>(buffer),
+                    var result = await socket.ReceiveAsync(
+                        buffer: new ArraySegment<byte>(buffer),
                         cancellationToken: CancellationToken.None);
 
                     handleMessage(result, buffer);

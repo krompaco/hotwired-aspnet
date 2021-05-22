@@ -11,9 +11,10 @@ namespace WebApp.WebSocketManager
         {
             services.AddTransient<ConnectionManager>();
 
-            foreach(var type in Assembly.GetEntryAssembly().ExportedTypes)
+            // ReSharper disable once PossibleNullReferenceException
+            foreach (var type in Assembly.GetEntryAssembly().ExportedTypes)
             {
-                if(type.GetTypeInfo().BaseType == typeof(WebSocketHandler))
+                if (type.GetTypeInfo().BaseType == typeof(WebSocketHandler))
                 {
                     services.AddSingleton(type);
                 }
@@ -22,11 +23,12 @@ namespace WebApp.WebSocketManager
             return services;
         }
 
-        public static IApplicationBuilder MapWebSocketManager(this IApplicationBuilder app, 
-                                                              PathString path,
-                                                              WebSocketHandler handler)
+        public static IApplicationBuilder MapWebSocketManager(
+              this IApplicationBuilder app,
+              PathString path,
+              WebSocketHandler handler)
         {
-            return app.Map(path, (_app) => _app.UseMiddleware<WebSocketManagerMiddleware>(handler));
+            return app.Map(path, (x) => x.UseMiddleware<WebSocketManagerMiddleware>(handler));
         }
     }
 }

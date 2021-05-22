@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net.WebSockets;
+﻿using System.Net.WebSockets;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -9,7 +8,8 @@ namespace WebApp
 {
     public class StreamTestHandler : WebSocketHandler
     {
-        public StreamTestHandler(ConnectionManager webSocketConnectionManager, IHttpContextAccessor httpContextAccessor) : base(webSocketConnectionManager, httpContextAccessor)
+        public StreamTestHandler(ConnectionManager webSocketConnectionManager, IHttpContextAccessor httpContextAccessor)
+            : base(webSocketConnectionManager, httpContextAccessor)
         {
         }
 
@@ -17,15 +17,15 @@ namespace WebApp
         {
             await base.OnConnected(socket);
 
-            var socketId = WebSocketConnectionManager.GetId(socket);
-            await SendMessageToAllAsync($"{socketId} is now connected");
+            var socketId = this.WebSocketConnectionManager.GetId(socket);
+            await this.SendMessageToAllAsync($"{socketId} is now connected");
         }
 
         public override async Task ReceiveAsync(WebSocket socket, WebSocketReceiveResult result, byte[] buffer)
         {
-            var socketId = WebSocketConnectionManager.GetId(socket);
+            var socketId = this.WebSocketConnectionManager.GetId(socket);
             var message = $"{socketId} said: {Encoding.UTF8.GetString(buffer, 0, result.Count)}";
-            await SendMessageToAllAsync(message);
+            await this.SendMessageToAllAsync(message);
         }
     }
 }
