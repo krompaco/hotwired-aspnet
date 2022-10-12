@@ -1,5 +1,5 @@
 # hotwire-dotnet-mvc-ref
-The regular 5.0 MVC sample but with Webpack setup for Tailwind CSS and Hotwire with Turbo and Stimulus.
+The regular 5.0/6.0 MVC sample but with Webpack setup for Tailwind CSS and Hotwire with Turbo and Stimulus.
 
 ## Getting started
 
@@ -11,12 +11,6 @@ npm run dev
 ```
 
 To build without watcher:
-
-```
-npm run devbuild
-```
-
-To build with Tailwind CSS purge:
 
 ```
 npm run prodbuild

@@ -21,7 +21,7 @@ namespace WebApp.Extensions
             {
                 session.SetString(Key, id);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 // Ignored
             }
