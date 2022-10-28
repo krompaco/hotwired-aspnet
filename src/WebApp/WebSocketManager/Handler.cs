@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Net.Sockets;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Krompaco.HotwiredAspNet.TurboStreams;
 using Microsoft.AspNetCore.Http;
 
 namespace WebApp.WebSocketManager
@@ -17,7 +19,14 @@ namespace WebApp.WebSocketManager
         {
             this.WebSocketConnectionManager.AddSocket(socket);
 
-            await this.SendMessageAsync(socket, $"Socket connected").ConfigureAwait(false);
+            var message = new TurboStreamMessage
+            {
+                Action = TurboStreamAction.Update,
+                Target = "stream-test",
+                TemplateInnerHtml = "Socket connected",
+            };
+
+            await this.SendMessageAsync(socket, message.ToString()).ConfigureAwait(false);
         }
 
         public virtual async Task OnDisconnected(WebSocket socket)

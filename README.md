@@ -1,13 +1,20 @@
-# hotwire-dotnet-mvc-ref
-The regular 5.0/6.0 MVC sample but with Webpack setup for Tailwind CSS and Hotwire with Turbo and Stimulus.
+# krompaco/hotwired-aspnet
+
+A Razor Pages sample site with CLI setup for Tailwind CSS and Webpack for Hotwire with Turbo and Stimulus.
 
 ## Getting started
 
 Be in repository root and do:
 
 ```
-npm install
+npm ci
 npm run dev
+```
+
+Or if you don't need any JS built this will work faster:
+
+```
+npm run dev:css
 ```
 
 To build without watcher:
@@ -16,13 +23,13 @@ To build without watcher:
 npm run prodbuild
 ```
 
-I recommend doing `npm run dev` and then going to `src/WebApp/` and starting dotnet project doing watch there too:
+I recommend doing `npm run dev:css` and then going to `src/WebApp/` and starting dotnet project by using:
 
 ```
 dotnet watch run
 ```
 
-References used:
+Material used:
 
 * https://hotwire.dev/
 * https://tailwindcss.com/
@@ -32,3 +39,9 @@ References used:
 * https://github.com/radu-matei/websocket-manager/
 
 Good luck!
+
+## Roadmap
+
+* Turbo examples
+* Form examples
+* Stream in POST response examples

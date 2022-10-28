@@ -1,0 +1,24 @@
+﻿@page
+
+@{
+    ViewData["Title"] = "Index page";
+}
+
+<h1 class="font-semibold tracking-tight text-3xl">@ViewData["Title"]</h1>
+
+<p class="mt-5">A simple Razor Pages app showing how to use some features from Turbo and Stimulus.</p>
+
+<div class="mt-10 bg-white rounded shadow p-4">
+    <h2 class="font-semibold tracking-tight text-xl">Very simple Stimulus controller test</h2>
+    <div class="mt-2">
+        <p data-controller="example">Original content from server response.</p>
+    </div>
+</div>
+
+<div class="mt-10 bg-white rounded shadow p-4">
+    <h2 class="font-semibold tracking-tight text-xl">Web socket test (also set up in Stimulus example controller)</h2>
+    <div class="mt-2">
+        <div id="stream-test">Original content from server response.</div>
+    </div>
+    <p class="mt-2 text-sm"><a class="link-primary" asp-page="StreamTest" target="_blank">Stream test page that will update text (open in new window)</a></p>
+</div>

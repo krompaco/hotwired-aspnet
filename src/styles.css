@@ -1,28 +1,30 @@
-@font-face {
-	font-family: 'Inter var';
-	font-weight: 100 900;
-	font-display: swap;
-	font-style: normal;
-	font-named-instance: 'Regular';
-	src: url('inter-roman-var.woff2') format('woff2');
-}
+@layer base {
+	@font-face {
+		font-family: 'Inter var';
+		font-weight: 100 900;
+		font-display: swap;
+		font-style: normal;
+		font-named-instance: 'Regular';
+		src: url('inter-roman-var.woff2') format('woff2');
+	}
 
-@font-face {
-	font-family: 'Inter var';
-	font-weight: 100 900;
-	font-display: swap;
-	font-style: italic;
-	font-named-instance: 'Italic';
-	src: url('inter-italic-var.woff2') format('woff2');
-}
+	@font-face {
+		font-family: 'Inter var';
+		font-weight: 100 900;
+		font-display: swap;
+		font-style: italic;
+		font-named-instance: 'Italic';
+		src: url('inter-italic-var.woff2') format('woff2');
+	}
 
-@font-face {
-	font-family: 'JetBrains Mono';
-	font-weight: 100 900;
-	font-display: swap;
-	font-style: normal;
-	font-named-instance: 'Regular';
-	src: url('jetbrainsmono-regular.woff2') format('woff2');
+	@font-face {
+		font-family: 'JetBrains Mono';
+		font-weight: 100 900;
+		font-display: swap;
+		font-style: normal;
+		font-named-instance: 'Regular';
+		src: url('jetbrainsmono-regular.woff2') format('woff2');
+	}
 }
 
 @tailwind base;

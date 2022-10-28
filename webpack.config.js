@@ -4,7 +4,7 @@ module.exports = {
 	entry: './src/index.js',
 	output: {
 		filename: 'main.js',
-		path: path.resolve(__dirname, './src/WebApp/wwwroot/')
+		path: path.resolve(__dirname, './src/WebApp/wwwroot/dist/')
 	},
 	mode: 'production',
 	watchOptions: {

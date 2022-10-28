@@ -5,7 +5,7 @@ bin
 obj
 node_modules
 *.pubxml.user
-src/WebApp/wwwroot/main.js
-src/WebApp/wwwroot/main.js.map
-src/WebApp/wwwroot/styles.css
-src/WebApp/wwwroot/styles.css.map
+src/WebApp/wwwroot/dist/main.js
+src/WebApp/wwwroot/dist/main.js.map
+src/WebApp/wwwroot/dist/styles.css
+src/WebApp/wwwroot/dist/styles.css.map

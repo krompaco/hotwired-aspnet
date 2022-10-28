@@ -5,7 +5,7 @@ module.exports = {
 		'./src/**/*.html',
 		'./src/**/*.cshtml',
 		'./src/**/*.cs',
-		'./src/controllers/**/*.js',
+		'./src/**/*_controller.js',
 	],
 	theme: {
 		extend: {
