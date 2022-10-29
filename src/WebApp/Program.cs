@@ -1,99 +1,113 @@
-﻿using System;
-using System.IO.Compression;
-using System.Linq;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
+﻿using System.IO.Compression;
 using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Net.Http.Headers;
-using WebApp;
 using WebApp.WebSocketManager;
 
-var builder = WebApplication.CreateBuilder(args);
+namespace WebApp;
 
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
-
-builder.Services.AddDistributedMemoryCache();
-
-builder.Services.AddSession(options =>
+public class Program
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(20);
-    options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
-});
-
-builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
-builder.Services.AddWebSocketManager();
-
-builder.Services.AddResponseCompression(options =>
-{
-    options.Providers.Add<BrotliCompressionProvider>();
-    options.Providers.Add<GzipCompressionProvider>();
-    options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "image/svg+xml" });
-});
-
-builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
-{
-    options.Level = CompressionLevel.Optimal;
-});
-
-builder.Services.AddRazorPages()
-    .AddViewOptions(options =>
+    public static void Main(string[] args)
     {
-        options.HtmlHelperOptions.ClientValidationEnabled = false;
-    });
+        var builder = WebApplication.CreateBuilder(args);
 
-using var loggerFactory = LoggerFactory.Create(builderInside =>
-{
-    builderInside.AddSimpleConsole(i => i.ColorBehavior = LoggerColorBehavior.Disabled);
-});
+        builder.Logging.ClearProviders();
+        builder.Logging.AddConsole(options => options.LogToStandardErrorThreshold = LogLevel.Trace);
 
-var logger = loggerFactory.CreateLogger<Program>();
+        builder.Services.AddDistributedMemoryCache();
 
-var app = builder.Build();
+        builder.Services.AddSession(options =>
+        {
+            options.IdleTimeout = TimeSpan.FromMinutes(20);
+            options.Cookie.HttpOnly = true;
+            options.Cookie.IsEssential = true;
+        });
 
-logger.LogInformation("Starting the app");
+        builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-app.UseResponseCompression();
+        builder.Services.AddWebSocketManager();
 
-////if (!app.Environment.IsDevelopment())
-////{
-app.UseExceptionHandler("/Error");
-////}
+        builder.Services.AddResponseCompression(options =>
+        {
+            options.Providers.Add<BrotliCompressionProvider>();
+            options.Providers.Add<GzipCompressionProvider>();
+            options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "image/svg+xml" });
+        });
 
-// Caching of assets
-app.UseStaticFiles(new StaticFileOptions
-{
-    OnPrepareResponse = ctx =>
-    {
-        const int durationInSeconds = 60 * 60 * 24 * 365;
-        ctx.Context.Response.Headers[HeaderNames.CacheControl] = $"public, max-age={durationInSeconds}";
-    },
-});
+        builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
+        {
+            options.Level = CompressionLevel.Optimal;
+        });
 
-app.UseSession();
+        builder.Services.AddRazorPages()
+            .AddSessionStateTempDataProvider()
+            .AddViewOptions(options => { options.HtmlHelperOptions.ClientValidationEnabled = false; });
 
-app.UseStatusCodePagesWithReExecute("/Error", "?statusCode={0}");
+        using var loggerFactory = LoggerFactory.Create(builderInside =>
+        {
+            builderInside.AddSimpleConsole(i => i.ColorBehavior = LoggerColorBehavior.Disabled);
+        });
 
-app.UseRouting();
+        var logger = loggerFactory.CreateLogger<Program>();
 
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapRazorPages();
-});
+        var app = builder.Build();
 
-// Web socket test
-var webSocketOptions = new WebSocketOptions
-{
-    KeepAliveInterval = TimeSpan.FromSeconds(120),
-};
-app.UseWebSockets(webSocketOptions);
-var serviceScopeFactory = app.Services.GetRequiredService<IServiceScopeFactory>();
-var serviceProvider = serviceScopeFactory.CreateScope().ServiceProvider;
-app.MapWebSocketManager("/streamtesthandler", serviceProvider.GetService<StreamTestHandler>());
+        logger.LogInformation("Starting the app");
 
-app.Run();
+        app.Use(async (context, next) =>
+        {
+            var nonce = Guid.NewGuid().ToString("N");
+            context.Items["csp-nonce"] = nonce;
+
+            var param = Guid.NewGuid().ToString("N");
+            context.Items["csrf-param"] = param;
+
+            await next();
+        });
+
+        app.UseResponseCompression();
+
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
+        }
+        else
+        {
+            app.UseExceptionHandler("/Error");
+        }
+
+        app.UseStaticFiles(new StaticFileOptions
+        {
+            OnPrepareResponse = ctx =>
+            {
+                const int durationInSeconds = 60 * 60 * 24 * 365;
+                ctx.Context.Response.Headers[HeaderNames.CacheControl] = $"public, max-age={durationInSeconds}";
+            },
+        });
+
+        app.UseSession();
+
+        app.UseStatusCodePagesWithReExecute("/Error", "?statusCode={0}");
+
+        app.UseRouting();
+
+        app.UseEndpoints(endpoints => { endpoints.MapRazorPages(); });
+
+        var webSocketOptions = new WebSocketOptions
+        {
+            KeepAliveInterval = TimeSpan.FromSeconds(120),
+        };
+        app.UseWebSockets(webSocketOptions);
+        var serviceScopeFactory = app.Services.GetRequiredService<IServiceScopeFactory>();
+        var serviceProvider = serviceScopeFactory.CreateScope().ServiceProvider;
+        var streamTestHandler = serviceProvider.GetService<StreamTestHandler>();
+
+        if (streamTestHandler != null)
+        {
+            app.MapWebSocketManager("/streamtesthandler", streamTestHandler);
+        }
+
+        app.Run();
+    }
+}

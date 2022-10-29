@@ -10,6 +10,11 @@
         <meta name="csp-nonce" content="@this.Context?.Items["csp-nonce"]" />
     }
 
+    @if (this.Context?.Items["csrf-param"] != null)
+    {
+        <meta name="csrf-param" content="@this.Context?.Items["csrf-param"]">
+    }
+
     <link rel="shortcut icon" href="/favicon.ico" type="image/ico" />
     <link href="/dist/styles.css" rel="stylesheet" asp-append-version="true" data-turbo-track="reload" />
     <script src="/dist/main.js" async asp-append-version="true" data-turbo-track="reload"></script>

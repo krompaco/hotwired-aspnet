@@ -12,7 +12,7 @@ namespace WebApp.WebSocketManager
             services.AddTransient<ConnectionManager>();
 
             // ReSharper disable once PossibleNullReferenceException
-            foreach (var type in Assembly.GetEntryAssembly().ExportedTypes)
+            foreach (var type in Assembly.GetEntryAssembly()!.ExportedTypes)
             {
                 if (type.GetTypeInfo().BaseType == typeof(WebSocketHandler))
                 {

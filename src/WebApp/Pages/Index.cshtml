@@ -1,4 +1,5 @@
 ﻿@page
+@model IndexModel
 
 @{
     ViewData["Title"] = "Index page";
@@ -9,10 +10,11 @@
 <p class="mt-5">A simple Razor Pages app showing how to use some features from Turbo and Stimulus.</p>
 
 <div class="mt-10 bg-white rounded shadow p-4">
-    <h2 class="font-semibold tracking-tight text-xl">Very simple Stimulus controller test</h2>
+    <h2 class="font-semibold tracking-tight text-xl">Very simple Stimulus example controller test</h2>
     <div class="mt-2">
         <p data-controller="example">Original content from server response.</p>
     </div>
+    <p class="mt-2 text-sm">I recommend learning more here: <a class="link-primary" href="https://github.com/excid3/tailwindcss-stimulus-components"><em class="font-bold not-italic">Tailwind CSS Stimulus Components</em> by excid3 on GitHub</a></p>
 </div>
 
 <div class="mt-10 bg-white rounded shadow p-4">
@@ -20,5 +22,34 @@
     <div class="mt-2">
         <div id="stream-test">Original content from server response.</div>
     </div>
-    <p class="mt-2 text-sm"><a class="link-primary" asp-page="StreamTest" target="_blank">Stream test page that will update text (open in new window)</a></p>
+    <p class="mt-2 text-sm"><a class="link-primary" asp-page="StreamTest" target="_blank"><em class="font-bold not-italic">Stream test page</em> that will update text (open in new window)</a></p>
+</div>
+
+<div class="mt-10 bg-white rounded shadow p-4">
+    <h2 class="font-semibold tracking-tight text-xl">Turbo frame in same page test</h2>
+
+    <turbo-frame id="js-turbo-frame-same-page" aria-live="polite">
+        @if (Model.TempStoredForm == null)
+        {
+            @* Accessibility-wise it's most likely better to just HTML required attributes on the inputs but I want to have a sample of model validation in here too *@
+            @await Html.PartialAsync("Partials/Forms/ValidationSummary")
+
+            <form asp-page="Index" method="post" class="space-y-2 mt-2">
+                <label class="block" asp-for="IndexForm.Name"></label>
+                <input asp-for="IndexForm.Name" type="text">
+
+                <label class="block" asp-for="IndexForm.Company"></label>
+                <input asp-for="IndexForm.Company" type="text">
+
+                <button type="submit" class="block link-primary text-sm">Submit form</button>
+            </form>
+        }
+
+        @if (Model.TempStoredForm != null)
+        {
+            <h3 class="mt-2">Hi @(Model.TempStoredForm.Name?.Trim()) from @(Model.TempStoredForm.Company?.Trim())!</h3>
+
+            <p class="mt-2"><a href="/" class="link-primary text-sm">Enter new data</a></p>
+        }
+    </turbo-frame>
 </div>
