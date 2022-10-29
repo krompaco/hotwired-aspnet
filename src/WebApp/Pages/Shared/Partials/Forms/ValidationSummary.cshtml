@@ -19,10 +19,10 @@
         {
             errorKeys.AddRange(modelState.Keys.OrderBy(x => allFormKeys.IndexOf(x)));
             <div class="bg-gray-50 p-4 mt-2">
-                <h3 class="text-sm font-bold text-yellow-800">
+                <h3 class="font-bold text-yellow-800">
                     Validating form data failed
                 </h3>
-                <ul class="mt-1 text-sm text-yellow-700">
+                <ul class="mt-1 text-yellow-700">
                     @foreach (var key in errorKeys)
                     {
                         var state = modelState[key];

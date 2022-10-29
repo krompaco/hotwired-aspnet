@@ -27,6 +27,10 @@
 		@apply underline text-blue-600 hover:bg-yellow-200 hover:text-gray-900 hover:no-underline hover:outline-none focus:bg-yellow-200 focus:text-gray-900 focus:no-underline focus:outline-none;
 	}
 
+	.button-primary {
+		@apply underline text-gray-100 bg-blue-600 hover:bg-yellow-200 hover:text-gray-900 hover:no-underline hover:outline-none focus:bg-yellow-200 focus:text-gray-900 focus:no-underline focus:outline-none py-2.5 px-3;
+	}
+
 	.turbo-progress-bar {
 		@apply h-2 bg-green-200;
 	}
