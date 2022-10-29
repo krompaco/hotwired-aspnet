@@ -2,7 +2,7 @@
 
 A Razor Pages sample site with CLI setup for Tailwind CSS and Webpack for Hotwire with Turbo and Stimulus.
 
-## [Demo web site on Azure](https://hotwired.azurewebsites.net/)
+## [Demo site](https://hotwired.azurewebsites.net/)
 
 The demo web sites is built using an Action in this repo.
 
@@ -57,6 +57,6 @@ Good luck!
 
 ## Roadmap
 
-* Turbo examples
-* Form examples
-* Stream in POST response examples
+* Add Stream in POST response examples
+* Maybe make NuGet package of `Krompaco.HotwiredAspNet`
+* XUnit tests for `Krompaco.HotwiredAspNet`
