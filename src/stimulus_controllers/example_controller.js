@@ -6,7 +6,8 @@ export default class extends Controller {
     this.element.textContent = "Text from Stimulus controller.";
 
     // NOTE: The web socket parts are highly experimental both in JS and WebApp
-    this.source = new WebSocket('wss://localhost:5001/streamtesthandler');
+    var origin = window.location.origin.replace('https://', 'wss://').replace('http://', 'ws://');
+    this.source = new WebSocket(origin + '/streamtesthandler');
     connectStreamSource(this.source);
   }
 

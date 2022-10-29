@@ -40,7 +40,7 @@
     <turbo-frame id="js-turbo-frame-same-page" aria-live="polite">
         @if (Model.TempStoredForm == null)
         {
-            @* Accessibility-wise it's most likely better to just HTML required attributes on the inputs but I want to have a sample of model validation in here too *@
+            @* Accessibility-wise it's most likely better to just set HTML required attributes on the inputs but I want to have a sample of model validation in here too *@
             @await Html.PartialAsync("Partials/Forms/ValidationSummary")
 
             <form asp-page="Index" method="post" class="space-y-6 mt-4">

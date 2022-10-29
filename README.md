@@ -2,6 +2,21 @@
 
 A Razor Pages sample site with CLI setup for Tailwind CSS and Webpack for Hotwire with Turbo and Stimulus.
 
+## [Demo web site on Azure](https://hotwired.azurewebsites.net/)
+
+The demo web sites is built using an Action in this repo.
+
+It's the basic GitHub Action to Azure App Service sample plus these steps for building the frontend files.
+
+```
+- name: Setup npm
+  uses: actions/setup-node@v2
+  with:
+    node-version: 18.12.0
+- run: npm ci
+- run: npm run prodbuild
+```
+
 ## Getting started
 
 Be in repository root and do:
