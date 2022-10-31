@@ -6,34 +6,32 @@ using WebApp.Models;
 
 namespace WebApp.Pages;
 
-public class IndexModel : PageModel
+public class TurboFrameExampleModel : PageModel
 {
     private readonly ILogger<IndexModel> logger;
 
-    public IndexModel(ILogger<IndexModel> logger)
+    public TurboFrameExampleModel(ILogger<IndexModel> logger)
     {
         this.logger = logger;
-        this.IndexForm = new IndexFormModel();
+        this.TurboFrameExampleForm = new TurboFrameExampleFormModel();
     }
 
     [BindProperty]
-    public IndexFormModel IndexForm { get; set; }
+    public TurboFrameExampleFormModel TurboFrameExampleForm { get; set; }
 
-    public IndexFormModel? TempStoredForm { get; set; }
+    public TurboFrameExampleFormModel? TempStoredForm { get; set; }
 
     public void OnGet()
     {
         this.logger.LogInformation("Hello from OnGet()");
 
-        this.TempStoredForm = this.TempData.Get<IndexFormModel>(nameof(this.IndexForm));
+        this.TempStoredForm = this.TempData.Get<TurboFrameExampleFormModel>(nameof(this.TurboFrameExampleForm));
     }
 
     public IActionResult OnPost()
     {
         this.logger.LogInformation("Hello from OnPost()");
 
-        // I recommend putting everything that can return a message inside IndexFormModel in this case,
-        // implement IValidatableObject if you need more done.
         if (!this.ModelState.IsValid)
         {
             // This follows the recommendation to set status = 422 for validation errors
@@ -41,9 +39,9 @@ public class IndexModel : PageModel
             return this.Page();
         }
 
-        this.TempData.Set(nameof(this.IndexForm), this.IndexForm);
+        this.TempData.Set(nameof(this.TurboFrameExampleForm), this.TurboFrameExampleForm);
 
         // This redirects with 303 which is recommended for both Turbo page and frame posts
-        return this.Response.TurboRedirectStatusResult("/");
+        return this.Response.TurboRedirectStatusResult("/TurboFrameExample");
     }
 }

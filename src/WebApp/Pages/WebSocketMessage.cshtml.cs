@@ -7,11 +7,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace WebApp.Pages;
 
-public class StreamTestModel : PageModel
+public class WebSocketMessageModel : PageModel
 {
     private readonly StreamTestHandler streamTestHandler;
 
-    public StreamTestModel(StreamTestHandler streamTestHandler)
+    public WebSocketMessageModel(StreamTestHandler streamTestHandler)
     {
         this.streamTestHandler = streamTestHandler;
     }

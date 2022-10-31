@@ -31,11 +31,13 @@
     <div class="mt-2">
         <div id="stream-test">Original content from server response.</div>
     </div>
-    <p class="mt-2"><a class="link-primary" asp-page="StreamTest" target="_blank"><em class="font-bold not-italic">Stream test page</em> that will update text (open in new window)</a></p>
+    <p class="mt-2"><a class="link-primary" asp-page="WebSocketMessage" target="_blank"><em class="font-bold not-italic">Stream test page</em> that will update text (open in new window)</a></p>
 </div>
 
 <div class="mt-10 bg-white rounded shadow p-4">
     <h2 class="font-semibold tracking-tight text-xl">Turbo frame in same page test</h2>
+
+    <p class="mt-2">This form posts and keeps the values in temp data so we can show them after a 303 redirect which is the recommendation.</p>
 
     <turbo-frame id="js-turbo-frame-same-page" aria-live="polite">
         @if (Model.TempStoredForm == null)
@@ -62,9 +64,37 @@
 
         @if (Model.TempStoredForm != null)
         {
-            <h3 class="mt-2">Hi @(Model.TempStoredForm.Name?.Trim()) from @(Model.TempStoredForm.Company?.Trim())!</h3>
+            <h3 class="mt-2 text-green-700">Hi <em class="font-bold not-italic">@(Model.TempStoredForm.Name?.Trim())</em> from <em class="font-bold not-italic">@(Model.TempStoredForm.Company?.Trim())</em>!</h3>
 
-            <p class="mt-2"><a href="/" class="link-primary">Enter new data</a></p>
+            <p class="mt-2"><a href="/?action=new" class="link-primary">Enter new data</a></p>
         }
     </turbo-frame>
+</div>
+
+<div class="mt-10 bg-white rounded shadow p-4">
+    <h2 class="font-semibold tracking-tight text-xl">Turbo frame in other page test</h2>
+
+    <p class="mt-2">This form responds with Turbo Frame content from a <a class="link-primary" asp-page="TurboFrameExample">Turbo frame in other page</a>.</p>
+
+    <turbo-frame id="js-turbo-frame-other-page" aria-live="polite" src="/TurboFrameExample" loading="lazy">
+        @await Html.PartialAsync("Partials/Interaction/Spinner")
+    </turbo-frame>
+</div>
+
+<div class="mt-10 bg-white rounded shadow p-4">
+    <div class="prose">
+        <h2>Typography example from <a href="https://www.cipsum.com/">Corporate Ipsum</a></h2>
+
+        <p class="lead">Leverage agile frameworks to provide a robust synopsis for high level overviews.</p>
+
+        <p>Iterative approaches to corporate strategy foster collaborative thinking to further the overall value proposition. Organically grow the holistic world view of disruptive innovation via workplace diversity and empowerment.</p>
+
+        <ul>
+            <li>Bring to the table win-win survival strategies to ensure proactive domination.</li>
+            <li>At the end of the day, going forward, a new normal that has evolved from generation X is on the runway heading towards a streamlined cloud solution.</li>
+            <li>User generated content in real-time will have multiple touchpoints for offshoring.</li>
+        </ul>
+
+        <p>Capitalize on low hanging fruit to identify a ballpark value added activity to beta test. Override the digital divide with additional clickthroughs from DevOps. Nanotechnology immersion along the information highway will close the loop on focusing solely on the bottom line.</p>
+    </div>
 </div>

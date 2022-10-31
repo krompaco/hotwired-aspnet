@@ -2,11 +2,11 @@
 
 A Razor Pages sample site with CLI setup for Tailwind CSS and Webpack for Hotwire with Turbo and Stimulus.
 
-## [Demo site](https://hotwired.azurewebsites.net/)
+## [Demo site on Azure](https://hotwired.azurewebsites.net/)
 
-The demo web sites is built using an Action in this repo.
+The demo web site is built using an Action in this repo.
 
-It's the basic GitHub Action to Azure App Service sample plus these steps for building the frontend files.
+It's the basic GitHub Action to Azure App Service example plus these steps first for building the frontend files.
 
 ```
 - name: Setup npm
@@ -26,9 +26,10 @@ npm ci
 npm run dev
 ```
 
-Or if you don't need any JS built this will work faster:
+Or if you don't need any JS watched and built while working this will work faster:
 
 ```
+npm run prodbuild
 npm run dev:css
 ```
 
@@ -53,10 +54,8 @@ Material used:
 * https://radu-matei.com/blog/aspnet-core-websockets-middleware/
 * https://github.com/radu-matei/websocket-manager/
 
-Good luck!
-
 ## Roadmap
 
-* Add Stream in POST response examples
-* Maybe make NuGet package of `Krompaco.HotwiredAspNet`
-* XUnit tests for `Krompaco.HotwiredAspNet`
+* Add Turbo Stream in POST response examples.
+* Maybe make NuGet package of `Krompaco.HotwiredAspNet`.
+* XUnit tests for `Krompaco.HotwiredAspNet`.
