@@ -18,7 +18,7 @@
     {
         errorKeys.AddRange(modelState.Keys.OrderBy(x => allFormKeys.IndexOf(x)));
         <div class="bg-gray-50 p-4 mt-2">
-            <h3 class="font-bold text-yellow-800">
+            <h3 class="font-bold text-red-600">
                 Validating form data failed
             </h3>
             <ul class="mt-1 text-yellow-700">
@@ -39,6 +39,10 @@
                     }
                 }
             </ul>
+            @if (this.ViewContext.HttpContext.Request.IsTurbo())
+            {
+                @Html.Raw(Alert.GetHtml("Validating form data failed", AlertType.Failure))
+            }
         </div>
     }
 }

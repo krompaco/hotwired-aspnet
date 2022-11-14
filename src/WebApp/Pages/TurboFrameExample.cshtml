@@ -41,6 +41,11 @@
         {
             <h3 class="mt-2 text-green-700">Hi <em class="font-bold not-italic">@(Model.TempStoredForm.Email?.Trim())</em>!</h3>
 
+            if (this.ViewContext.HttpContext.Request.IsTurbo())
+            {
+                @Html.Raw(Alert.GetHtml($"Hi {Model.TempStoredForm.Email?.Trim()}"))
+            }
+
             <p class="mt-2"><a href="/TurboFrameExample?action=new" class="link-primary">Enter new data</a></p>
         }
     </turbo-frame>

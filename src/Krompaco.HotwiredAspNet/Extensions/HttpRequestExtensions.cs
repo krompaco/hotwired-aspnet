@@ -12,6 +12,6 @@ public static class HttpRequestExtensions
             return false;
         }
 
-        return values.Any() && values.First().Contains(TurboStreamMessage.MimeType, StringComparison.OrdinalIgnoreCase);
+        return values.Count > 0 && (values[0]?.Contains(TurboStreamMessage.MimeType, StringComparison.OrdinalIgnoreCase) ?? false);
     }
 }
