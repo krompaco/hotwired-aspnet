@@ -19,6 +19,11 @@
 </p>
 
 <div class="mt-10 bg-white rounded shadow p-4">
+    <h2 class="font-semibold tracking-tight text-xl">Turbo Streams and Frames showcase: Player Database</h2>
+    <p class="mt-2">A <a class="link-primary" asp-page="PlayerList"><em class="font-bold not-italic">separate page</em> showing some capabilities</a> and a smooth way of using View Components to keep markup DRY.</p>
+</div>
+
+<div class="mt-10 bg-white rounded shadow p-4">
     <h2 class="font-semibold tracking-tight text-xl">Very simple Stimulus example controller test</h2>
     <div class="mt-2">
         <p data-controller="example">Original content from server response.</p>
@@ -43,7 +48,7 @@
         @if (Model.TempStoredForm == null)
         {
             @* Accessibility-wise it's most likely better to just set HTML required attributes on the inputs but I want to have a sample of model validation in here too *@
-            @await Html.PartialAsync("Partials/Forms/ValidationSummary")
+            @await Component.InvokeAsync("ValidationSummary", this.Model)
 
             <form asp-page="Index" method="post" class="space-y-6 mt-4">
                 <div>
@@ -64,11 +69,11 @@
 
         @if (Model.TempStoredForm != null)
         {
-            <h3 class="mt-2 text-green-700">Hi <em class="font-bold not-italic">@(Model.TempStoredForm.Name?.Trim())</em> from <em class="font-bold not-italic">@(Model.TempStoredForm.Company?.Trim())</em>!</h3>
+            <h3 class="mt-2 text-green-700 text-lg">Hi <em class="font-bold not-italic">@(Model.TempStoredForm.Name?.Trim())</em> from <em class="font-bold not-italic">@(Model.TempStoredForm.Company?.Trim())</em>!</h3>
 
             if (this.ViewContext.HttpContext.Request.IsTurbo())
             {
-                @Html.Raw(Alert.GetHtml($"Hi {Model.TempStoredForm.Name?.Trim()} from {Model.TempStoredForm.Company?.Trim()}", AlertType.Information))
+                @await Component.InvokeAsync("Alert", new Alert($"Hi {Model.TempStoredForm.Name?.Trim()} from {Model.TempStoredForm.Company?.Trim()}", AlertType.Information))
             }
 
             <p class="mt-2"><a href="/?action=new" class="link-primary">Enter new data</a></p>
@@ -82,7 +87,7 @@
     <p class="mt-2">This form responds with Turbo Frame content from a <a class="link-primary" asp-page="TurboFrameExample">Turbo frame in other page</a>.</p>
 
     <turbo-frame id="js-turbo-frame-other-page" aria-live="polite" src="/TurboFrameExample" loading="lazy">
-        @await Html.PartialAsync("Partials/Interaction/Spinner")
+        @await Component.InvokeAsync("Spinner")
     </turbo-frame>
 </div>
 

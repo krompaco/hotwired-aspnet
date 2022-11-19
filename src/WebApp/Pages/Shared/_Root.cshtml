@@ -8,14 +8,14 @@
 
     <title>@ViewData["Title"]</title>
 
-    @if (this.Context?.Items["csp-nonce"] != null)
+    @if (this.Context.Items["csp-nonce"] != null)
     {
-        <meta name="csp-nonce" content="@this.Context?.Items["csp-nonce"]" />
+        <meta name="csp-nonce" content="@this.Context.Items["csp-nonce"]" />
     }
 
-    @if (this.Context?.Items["csrf-param"] != null)
+    @if (this.Context.Items["csrf-param"] != null)
     {
-        <meta name="csrf-param" content="@this.Context?.Items["csrf-param"]">
+        <meta name="csrf-param" content="@this.Context.Items["csrf-param"]">
     }
 
     <link rel="shortcut icon" href="/favicon.ico" type="image/ico">

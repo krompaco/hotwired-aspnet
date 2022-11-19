@@ -1,70 +1,65 @@
-﻿using System;
-using System.Net.WebSockets;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using System.Net.WebSockets;
 
-namespace WebApp.WebSocketManager
+namespace WebApp.WebSocketManager;
+
+public class WebSocketManagerMiddleware
 {
-    public class WebSocketManagerMiddleware
+    private readonly RequestDelegate next;
+
+    public WebSocketManagerMiddleware(
+        RequestDelegate next,
+        WebSocketHandler webSocketHandler)
     {
-        private readonly RequestDelegate next;
+        this.next = next;
+        this.WebSocketHandler = webSocketHandler;
+    }
 
-        public WebSocketManagerMiddleware(
-            RequestDelegate next,
-            WebSocketHandler webSocketHandler)
+    private WebSocketHandler WebSocketHandler { get; }
+
+    public async Task Invoke(HttpContext context)
+    {
+        if (!context.WebSockets.IsWebSocketRequest)
         {
-            this.next = next;
-            this.WebSocketHandler = webSocketHandler;
+            return;
         }
 
-        private WebSocketHandler WebSocketHandler { get; }
+        var socket = await context.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
+        await this.WebSocketHandler.OnConnected(socket).ConfigureAwait(false);
 
-        public async Task Invoke(HttpContext context)
+        await this.Receive(socket, async (result, buffer) =>
         {
-            if (!context.WebSockets.IsWebSocketRequest)
+            switch (result.MessageType)
             {
-                return;
+                case WebSocketMessageType.Text:
+                    await this.WebSocketHandler.ReceiveAsync(socket, result, buffer).ConfigureAwait(false);
+                    return;
+                case WebSocketMessageType.Close:
+                    await this.WebSocketHandler.OnDisconnected(socket).ConfigureAwait(false);
+                    return;
             }
+        }).ConfigureAwait(false);
 
-            var socket = await context.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
-            await this.WebSocketHandler.OnConnected(socket).ConfigureAwait(false);
+        // TODO: Investigate the Kestrel exception thrown when this is the last middleware
+        ////await _next.Invoke(context);
+    }
 
-            await this.Receive(socket, async (result, buffer) =>
-            {
-                switch (result.MessageType)
-                {
-                    case WebSocketMessageType.Text:
-                        await this.WebSocketHandler.ReceiveAsync(socket, result, buffer).ConfigureAwait(false);
-                        return;
-                    case WebSocketMessageType.Close:
-                        await this.WebSocketHandler.OnDisconnected(socket).ConfigureAwait(false);
-                        return;
-                }
-            }).ConfigureAwait(false);
+    private async Task Receive(WebSocket socket, Action<WebSocketReceiveResult, byte[]> handleMessage)
+    {
+        var buffer = new byte[1024 * 4];
 
-            // TODO: Investigate the Kestrel exception thrown when this is the last middleware
-            ////await _next.Invoke(context);
-        }
-
-        private async Task Receive(WebSocket socket, Action<WebSocketReceiveResult, byte[]> handleMessage)
+        while (socket.State == WebSocketState.Open)
         {
-            var buffer = new byte[1024 * 4];
-
-            while (socket.State == WebSocketState.Open)
+            try
             {
-                try
-                {
-                    var result = await socket.ReceiveAsync(
-                        buffer: new ArraySegment<byte>(buffer),
-                        cancellationToken: CancellationToken.None).ConfigureAwait(false);
+                var result = await socket.ReceiveAsync(
+                    buffer: new ArraySegment<byte>(buffer),
+                    cancellationToken: CancellationToken.None).ConfigureAwait(false);
 
-                    handleMessage(result, buffer);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                }
+                handleMessage(result, buffer);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
             }
         }
     }

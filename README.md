@@ -53,6 +53,7 @@ Material used:
 * https://docs.microsoft.com/en-us/aspnet/core/fundamentals/websockets?view=aspnetcore-5.0
 * https://radu-matei.com/blog/aspnet-core-websockets-middleware/
 * https://github.com/radu-matei/websocket-manager/
+* https://raw.githubusercontent.com/jakakonda/View2String/master/View2String/Services/ViewRendererService2.cs
 
 ## Roadmap
 

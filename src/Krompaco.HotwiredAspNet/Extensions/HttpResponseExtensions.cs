@@ -1,5 +1,4 @@
-﻿using Krompaco.HotwiredAspNet.TurboStreams;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Krompaco.HotwiredAspNet.Extensions;

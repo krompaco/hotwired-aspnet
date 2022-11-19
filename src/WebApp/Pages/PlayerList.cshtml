@@ -1,0 +1,25 @@
+﻿@page
+@model PlayerListPageModel
+
+@{
+    ViewData["Title"] = "Player list page";
+}
+
+<h1 class="font-semibold tracking-tight text-3xl">@ViewData["Title"]</h1>
+
+<p class="mt-5">A page showing some capabilities and a smooth way of using View Components to keep markup DRY.</p>
+
+<div class="bg-white rounded shadow p-4 mt-10">
+    <h1 class="font-semibold tracking-tight text-xl">Players "database" example</h1>
+
+    <p class="mt-2">This page has examples of Turbo Stream messages.</p>
+
+    <p class="mt-2">
+        <a class="link-primary" asp-page="PlayerForm" asp-route-id="@Guid.Empty.ToString("D")" data-turbo-frame="js-player-form">Add new player</a>
+    </p>
+
+    @await Component.InvokeAsync("PlayerList", this.Model.AllPlayers)
+
+    <turbo-frame id="js-player-form" aria-live="polite"></turbo-frame>
+    <div id="js-alert-target" aria-live="polite"></div>
+</div>

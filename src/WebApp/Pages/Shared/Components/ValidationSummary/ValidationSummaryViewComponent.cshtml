@@ -41,7 +41,7 @@
             </ul>
             @if (this.ViewContext.HttpContext.Request.IsTurbo())
             {
-                @Html.Raw(Alert.GetHtml("Validating form data failed", AlertType.Failure))
+                @await Component.InvokeAsync("Alert", new Alert("Validating form data failed", AlertType.Failure))
             }
         </div>
     }

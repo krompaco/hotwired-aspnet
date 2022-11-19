@@ -1,4 +1,5 @@
 ﻿using System.IO.Compression;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Net.Http.Headers;
@@ -25,6 +26,9 @@ public class Program
         });
 
         builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+        builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+
+        builder.Services.AddTransient<RazorViewComponentToStringRenderer>();
 
         builder.Services.AddWebSocketManager();
 

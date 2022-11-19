@@ -14,7 +14,7 @@
         @if (Model.TempStoredForm == null)
         {
             @* Accessibility-wise it's most likely better to just set HTML required attributes on the inputs but I want to have a sample of model validation in here too *@
-            @await Html.PartialAsync("Partials/Forms/ValidationSummary")
+            @await Component.InvokeAsync("ValidationSummary", this.Model)
 
             <form asp-page="TurboFrameExample" method="post" class="space-y-6 mt-4">
                 <div>
@@ -39,11 +39,11 @@
 
         @if (Model.TempStoredForm != null)
         {
-            <h3 class="mt-2 text-green-700">Hi <em class="font-bold not-italic">@(Model.TempStoredForm.Email?.Trim())</em>!</h3>
+            <h3 class="mt-2 text-green-700 text-lg">Hi <em class="font-bold not-italic">@(Model.TempStoredForm.Email?.Trim())</em>!</h3>
 
             if (this.ViewContext.HttpContext.Request.IsTurbo())
             {
-                @Html.Raw(Alert.GetHtml($"Hi {Model.TempStoredForm.Email?.Trim()}"))
+                @await Component.InvokeAsync("Alert", new Alert($"Hi {Model.TempStoredForm.Email?.Trim()}"))
             }
 
             <p class="mt-2"><a href="/TurboFrameExample?action=new" class="link-primary">Enter new data</a></p>
