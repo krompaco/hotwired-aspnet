@@ -55,8 +55,13 @@ Material used:
 * https://github.com/radu-matei/websocket-manager/
 * https://raw.githubusercontent.com/jakakonda/View2String/master/View2String/Services/ViewRendererService2.cs
 
+This article has a description of how to use SignalR with Turbo Streams instead of the barebone Web Socket Way in my sample.
+https://medium.com/p/5ff84da5445
+
+Here is also an alternative way. 
+https://www.nuget.org/packages/HotwireTurbo/
+
 ## Roadmap
 
-* Add Turbo Stream in POST response examples.
 * Maybe make NuGet package of `Krompaco.HotwiredAspNet`.
 * XUnit tests for `Krompaco.HotwiredAspNet`.
