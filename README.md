@@ -56,7 +56,7 @@ Material used:
 * https://raw.githubusercontent.com/jakakonda/View2String/master/View2String/Services/ViewRendererService2.cs
 
 This article has a description of how to use SignalR with Turbo Streams instead of the barebone Web Socket hack in my sample.
-https://medium.com/p/5ff84da5445
+https://medium.com/@kpax/hotwired-asp-net-core-web-application-part-4-5ff84da54452
 
 Here is also an alternative dotnet project. 
 https://www.nuget.org/packages/HotwireTurbo/
