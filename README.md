@@ -58,7 +58,7 @@ Material used:
 This article has a description of how to use SignalR with Turbo Streams instead of the barebone Web Socket Way in my sample.
 https://medium.com/p/5ff84da5445
 
-Here is also an alternative way. 
+Here is also an alternative dotnet project. 
 https://www.nuget.org/packages/HotwireTurbo/
 
 ## Roadmap
