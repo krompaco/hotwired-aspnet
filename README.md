@@ -55,7 +55,7 @@ Material used:
 * https://github.com/radu-matei/websocket-manager/
 * https://raw.githubusercontent.com/jakakonda/View2String/master/View2String/Services/ViewRendererService2.cs
 
-This article has a description of how to use SignalR with Turbo Streams instead of the barebone Web Socket Way in my sample.
+This article has a description of how to use SignalR with Turbo Streams instead of the barebone Web Socket hack in my sample.
 https://medium.com/p/5ff84da5445
 
 Here is also an alternative dotnet project. 
