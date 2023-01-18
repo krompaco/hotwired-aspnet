@@ -28,7 +28,7 @@ public class Program
         builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 
-        builder.Services.AddTransient<RazorViewComponentToStringRenderer>();
+        builder.Services.AddScoped<RazorViewComponentToStringRenderer>();
 
         builder.Services.AddWebSocketManager();
 

@@ -24,7 +24,7 @@
 	}
 
 	.turbo-progress-bar {
-		@apply h-2 bg-green-200;
+		@apply h-2 bg-gray-200;
 	}
 }
 
