@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using WebApp.Hubs
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+<!DOCTYPE html>
 <html lang="en" class="h-full bg-gray-100">
 <head>
     <meta charset="utf-8" />
@@ -22,9 +24,11 @@
     <link href="/dist/styles.css" rel="stylesheet" asp-append-version="true" data-turbo-track="reload">
     <script src="/dist/main.js" async asp-append-version="true" data-turbo-track="reload"></script>
 
-    <meta name="description" content="Sample page of using Razor Pages and Hotwired.dev stuff.">
+    <meta name="description" content="Sample page of using Razor Pages, SignalR and Hotwired.dev stuff.">
 </head>
 <body class="h-full">
 @RenderBody()
+<div id="js-alert-target" aria-live="polite"></div>
+<signalr-turbo-stream hub=@($"/{nameof(AppHub)}") method="GlobalMessageReceived"></signalr-turbo-stream>
 </body>
 </html>

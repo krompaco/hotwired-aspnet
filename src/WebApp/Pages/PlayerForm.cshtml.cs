@@ -1,5 +1,5 @@
-﻿using Krompaco.HotwiredAspNet.Extensions;
-using Krompaco.HotwiredAspNet.TurboStreams;
+﻿using Krompaco.AspNetCore.Hotwired.Extensions;
+using Krompaco.AspNetCore.Hotwired.TurboStreams;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using WebApp.Extensions;

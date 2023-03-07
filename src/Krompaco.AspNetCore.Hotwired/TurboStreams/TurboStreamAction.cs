@@ -1,4 +1,4 @@
-﻿namespace Krompaco.HotwiredAspNet.TurboStreams
+﻿namespace Krompaco.AspNetCore.Hotwired.TurboStreams
 {
     public enum TurboStreamAction
     {

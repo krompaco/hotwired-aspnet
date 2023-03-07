@@ -1,4 +1,5 @@
 ﻿@page
+@using Krompaco.AspNetCore.Hotwired.Extensions
 @model IndexModel
 
 @{
@@ -32,11 +33,13 @@
 </div>
 
 <div class="mt-10 bg-white rounded shadow p-4">
-    <h2 class="font-semibold tracking-tight text-xl">Web socket test (also set up in Stimulus example controller)</h2>
-    <div class="mt-2">
-        <div id="stream-test">Original content from server response.</div>
-    </div>
-    <p class="mt-2"><a class="link-primary" asp-page="WebSocketMessage" target="_blank"><em class="font-bold not-italic">Stream test page</em> that will update text (open in new window)</a></p>
+    <h2 class="font-semibold tracking-tight text-xl">Turbo frame in other page SignalR test</h2>
+
+    <p class="mt-2">This form responds with a SignalR global message.</p>
+
+    <turbo-frame id="js-global-message-form" aria-live="polite" src="/GlobalMessageForm" loading="lazy">
+        @await Component.InvokeAsync("Spinner")
+    </turbo-frame>
 </div>
 
 <div class="mt-10 bg-white rounded shadow p-4">

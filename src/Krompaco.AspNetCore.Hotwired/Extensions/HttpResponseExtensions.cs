@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Krompaco.HotwiredAspNet.Extensions;
+namespace Krompaco.AspNetCore.Hotwired.Extensions;
 
 public static class HttpResponseExtensions
 {

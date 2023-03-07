@@ -5,7 +5,7 @@ VisualStudioVersion = 17.3.32922.545
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApp", "src\WebApp\WebApp.csproj", "{B110391E-BB9D-4398-B413-17A017159BE1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Krompaco.HotwiredAspNet", "src\Krompaco.HotwiredAspNet\Krompaco.HotwiredAspNet.csproj", "{759169DD-00FF-4257-BFA9-B1FFDCD53237}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Krompaco.AspNetCore.Hotwired", "src\Krompaco.AspNetCore.Hotwired\Krompaco.AspNetCore.Hotwired.csproj", "{759169DD-00FF-4257-BFA9-B1FFDCD53237}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

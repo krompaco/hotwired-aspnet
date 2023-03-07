@@ -28,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Krompaco.HotwiredAspNet\Krompaco.HotwiredAspNet.csproj" />
+    <ProjectReference Include="..\Krompaco.AspNetCore.Hotwired\Krompaco.AspNetCore.Hotwired.csproj" />
   </ItemGroup>
 
 </Project>

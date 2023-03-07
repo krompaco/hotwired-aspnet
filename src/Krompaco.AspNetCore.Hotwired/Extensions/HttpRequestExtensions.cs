@@ -1,7 +1,7 @@
-﻿using Krompaco.HotwiredAspNet.TurboStreams;
+﻿using Krompaco.AspNetCore.Hotwired.TurboStreams;
 using Microsoft.AspNetCore.Http;
 
-namespace Krompaco.HotwiredAspNet.Extensions;
+namespace Krompaco.AspNetCore.Hotwired.Extensions;
 
 public static class HttpRequestExtensions
 {

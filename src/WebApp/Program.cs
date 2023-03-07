@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Net.Http.Headers;
-using WebApp.WebSocketManager;
+using WebApp.Hubs;
 
 namespace WebApp;
 
@@ -30,8 +30,6 @@ public class Program
 
         builder.Services.AddScoped<RazorViewComponentToStringRenderer>();
 
-        builder.Services.AddWebSocketManager();
-
         builder.Services.AddResponseCompression(options =>
         {
             options.Providers.Add<BrotliCompressionProvider>();
@@ -47,6 +45,8 @@ public class Program
         builder.Services.AddRazorPages()
             .AddSessionStateTempDataProvider()
             .AddViewOptions(options => { options.HtmlHelperOptions.ClientValidationEnabled = false; });
+
+        builder.Services.AddSignalR();
 
         using var loggerFactory = LoggerFactory.Create(builderInside =>
         {
@@ -98,19 +98,7 @@ public class Program
 
         app.MapRazorPages();
 
-        var webSocketOptions = new WebSocketOptions
-        {
-            KeepAliveInterval = TimeSpan.FromSeconds(120),
-        };
-        app.UseWebSockets(webSocketOptions);
-        var serviceScopeFactory = app.Services.GetRequiredService<IServiceScopeFactory>();
-        var serviceProvider = serviceScopeFactory.CreateScope().ServiceProvider;
-        var streamTestHandler = serviceProvider.GetService<StreamTestHandler>();
-
-        if (streamTestHandler != null)
-        {
-            app.MapWebSocketManager("/streamtesthandler", streamTestHandler);
-        }
+        app.MapHub<AppHub>("/AppHub");
 
         app.Run();
     }

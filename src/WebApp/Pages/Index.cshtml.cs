@@ -1,4 +1,4 @@
-﻿using Krompaco.HotwiredAspNet.Extensions;
+﻿using Krompaco.AspNetCore.Hotwired.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using WebApp.Extensions;
