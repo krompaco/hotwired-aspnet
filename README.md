@@ -61,7 +61,7 @@ https://medium.com/@kpax/hotwired-asp-net-core-web-application-part-4-5ff84da544
 
 About Turbo Streams over Web Socket: I recommend using the SignalR way from `main` but in the branch `archived/barebone-websocket` there's a barebone Web Socket Proof-of-Concept as well.
 
-Here is also an alternative dotnet project. 
+An alternative dotnet project:
 https://www.nuget.org/packages/HotwireTurbo/
 
 ## Roadmap
