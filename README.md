@@ -49,6 +49,7 @@ Material used:
 
 * https://hotwire.dev/
 * https://tailwindcss.com/
+* https://github.com/excid3/tailwindcss-stimulus-components
 * https://django-turbo-response.readthedocs.io/en/latest/#channels
 * https://docs.microsoft.com/en-us/aspnet/core/fundamentals/websockets?view=aspnetcore-5.0
 * https://radu-matei.com/blog/aspnet-core-websockets-middleware/
