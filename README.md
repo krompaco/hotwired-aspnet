@@ -55,13 +55,16 @@ Material used:
 * https://github.com/radu-matei/websocket-manager/
 * https://raw.githubusercontent.com/jakakonda/View2String/master/View2String/Services/ViewRendererService2.cs
 
-This article has a description of how to use SignalR with Turbo Streams instead of the barebone Web Socket hack in my sample.
+This article is where the SignalR setup comes from:
 https://medium.com/@kpax/hotwired-asp-net-core-web-application-part-4-5ff84da54452
+
+About Turbo Streams over Web Socket: I recommend using the SignalR way from `main` but in the branch `archived/barebone-websocket` there's a barebone Web Socket Proof-of-Concept as well.
 
 Here is also an alternative dotnet project. 
 https://www.nuget.org/packages/HotwireTurbo/
 
 ## Roadmap
 
-* Maybe make NuGet package of `Krompaco.HotwiredAspNet`.
-* XUnit tests for `Krompaco.HotwiredAspNet`.
+* Maybe make NuGet package of `Krompaco.AspNetCore.Hotwired`.
+* XUnit tests for `Krompaco.AspNetCore.Hotwired`.
+* Make default styling to look like an Optimizely CMS admin page.
