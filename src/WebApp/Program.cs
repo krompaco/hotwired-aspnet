@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Net.Http.Headers;
 using WebApp.Hubs;
+using WebApp.Shared;
 
 namespace WebApp;
 
@@ -28,8 +29,6 @@ public class Program
         builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 
-        builder.Services.AddScoped<RazorViewComponentToStringRenderer>();
-
         builder.Services.AddResponseCompression(options =>
         {
             options.Providers.Add<BrotliCompressionProvider>();
@@ -42,7 +41,10 @@ public class Program
             options.Level = CompressionLevel.Optimal;
         });
 
-        builder.Services.AddRazorPages()
+        builder.Services.AddRazorComponents();
+
+        builder.Services
+            .AddControllers()
             .AddSessionStateTempDataProvider()
             .AddViewOptions(options => { options.HtmlHelperOptions.ClientValidationEnabled = false; });
 
@@ -72,14 +74,14 @@ public class Program
 
         app.UseResponseCompression();
 
-        if (app.Environment.IsDevelopment())
-        {
-            app.UseDeveloperExceptionPage();
-        }
-        else
-        {
-            app.UseExceptionHandler("/Error");
-        }
+        ////if (app.Environment.IsDevelopment())
+        ////{
+        app.UseDeveloperExceptionPage();
+        ////}
+        ////else
+        ////{
+        ////    app.UseExceptionHandler("/Error");
+        ////}
 
         app.UseStaticFiles(new StaticFileOptions
         {
@@ -92,11 +94,11 @@ public class Program
 
         app.UseSession();
 
-        app.UseStatusCodePagesWithReExecute("/Error", "?statusCode={0}");
-
         app.UseRouting();
 
-        app.MapRazorPages();
+        app.MapRazorComponents<MainLayout>();
+
+        app.MapDefaultControllerRoute();
 
         app.MapHub<AppHub>("/AppHub");
 

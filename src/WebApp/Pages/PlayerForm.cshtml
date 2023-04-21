@@ -1,10 +1,10 @@
-﻿@page "{id:guid}"
+﻿@*@page "{id:guid}"
 @model PlayerFormPageModel
 
 @{
     this.Layout = "_Root";
     ViewData["Title"] = "Player form page";
-}
+}*@
 
 <turbo-frame id="js-player-form" aria-live="polite">
     <div class="pointer-events-none fixed inset-0 flex items-end px-1 py-5 sm:items-start sm:p-5">
@@ -14,9 +14,9 @@
                     <div class="flex items-start">
                         <div class="ml-3 w-0 flex-1">
                             @* Accessibility-wise it's most likely better to just set HTML required attributes on the inputs but I want to have a sample of model validation in here too *@
-                            @await Component.InvokeAsync("ValidationSummary", this.Model)
+                            @*@await Component.InvokeAsync("ValidationSummary", this.Model)*@
 
-                            <form asp-page="PlayerForm" asp-route-id="@Model.PlayerFormModel.Id" method="post" class="space-y-6 mt-4">
+                            <form action="/forms/player" method="post" class="space-y-6 mt-4">
                                 <div>
                                     <label class="block" asp-for="PlayerFormModel.Name"></label>
                                     <input class="mt-2" asp-for="PlayerFormModel.Name" type="text">
