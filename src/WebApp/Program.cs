@@ -98,6 +98,18 @@ public class Program
 
         app.MapRazorComponents<MainLayout>();
 
+        app.Use(async (context, next) =>
+        {
+            if (string.IsNullOrEmpty(context.Response.Headers.ContentType.ToString()))
+            {
+                context.Response.Headers.ContentType = "text/html; charset=UTF-8";
+                context.Response.Headers.CacheControl = "no-cache, no-store";
+                context.Response.Headers.Pragma = "no-cache";
+            }
+
+            await next();
+        });
+
         app.MapDefaultControllerRoute();
 
         app.MapHub<AppHub>("/AppHub");

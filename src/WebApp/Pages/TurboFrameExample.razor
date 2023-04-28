@@ -1,10 +1,6 @@
-﻿@page
-@using Krompaco.AspNetCore.Hotwired.Extensions
-@model TurboFrameExampleModel
+﻿@page "/turboframeexample"
 
-@{
-    ViewData["Title"] = "Turbo frame example page";
-}
+<PageTitle>Turbo frame example page</PageTitle>
 
 <div class="bg-white rounded shadow p-4">
     <h1 class="font-semibold tracking-tight text-xl">Turbo frame in other page test</h1>
@@ -12,12 +8,12 @@
     <p class="mt-2">This page is typically not used on it's own. The Turbo Frame starts after this text.</p>
 
     <turbo-frame id="js-turbo-frame-other-page" aria-live="polite">
-        @if (Model.TempStoredForm == null)
-        {
+        @*@if (Model.TempStoredForm == null)
+        {*@
             @* Accessibility-wise it's most likely better to just set HTML required attributes on the inputs but I want to have a sample of model validation in here too *@
-            @await Component.InvokeAsync("ValidationSummary", this.Model)
+            @*@await Component.InvokeAsync("ValidationSummary", this.Model)*@
 
-            <form asp-page="TurboFrameExample" method="post" class="space-y-6 mt-4">
+            <form action="/forms/turboframeexample" method="post" class="space-y-6 mt-4">
                 <div>
                     <label class="block" asp-for="TurboFrameExampleForm.Email"></label>
                     <input class="mt-2" asp-for="TurboFrameExampleForm.Email" type="text">
@@ -36,9 +32,9 @@
                     <button type="submit" class="button-primary">Submit form</button>
                 </div>
             </form>
-        }
+        @*}*@
 
-        @if (Model.TempStoredForm != null)
+        @*@if (Model.TempStoredForm != null)
         {
             <h3 class="mt-2 text-green-700 text-lg">Hi <em class="font-bold not-italic">@(Model.TempStoredForm.Email?.Trim())</em>!</h3>
 
@@ -48,6 +44,43 @@
             }
 
             <p class="mt-2"><a href="/TurboFrameExample?action=new" class="link-primary">Enter new data</a></p>
-        }
+        }*@
     </turbo-frame>
 </div>
+
+@code {
+    ////public TurboFrameExampleModel(ILogger<IndexModel> logger)
+    ////{
+    ////    this.logger = logger;
+    ////    this.TurboFrameExampleForm = new TurboFrameExampleFormModel();
+    ////}
+
+    ////[BindProperty]
+    ////public TurboFrameExampleFormModel TurboFrameExampleForm { get; set; }
+
+    ////public TurboFrameExampleFormModel? TempStoredForm { get; set; }
+
+    ////public void OnGet()
+    ////{
+    ////    this.logger.LogInformation("Hello from OnGet()");
+
+    ////    this.TempStoredForm = this.TempData.Get<TurboFrameExampleFormModel>(nameof(this.TurboFrameExampleForm));
+    ////}
+
+    ////public IActionResult OnPost()
+    ////{
+    ////    this.logger.LogInformation("Hello from OnPost()");
+
+    ////    if (!this.ModelState.IsValid)
+    ////    {
+    ////        // This follows the recommendation to set status = 422 for validation errors
+    ////        this.Response.SetTurboValidationErrorStatus(this.Request);
+    ////        return this.Page();
+    ////    }
+
+    ////    this.TempData.Set(nameof(this.TurboFrameExampleForm), this.TurboFrameExampleForm);
+
+    ////    // This redirects with 303 which is recommended for both Turbo page and frame posts
+    ////    return this.Response.TurboRedirectStatusResult("/TurboFrameExample");
+    ////}
+}

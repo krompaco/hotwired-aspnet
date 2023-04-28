@@ -1,4 +1,4 @@
-﻿@model List<PlayerFormModel>
+﻿@*@model List<PlayerFormModel>
 
 <ol id="js-player-list" class="list-decimal list-inside">
     @foreach (var player in this.Model)
@@ -7,4 +7,4 @@
             @await Component.InvokeAsync("PlayerListItem", player)
         </li>
     }
-</ol>
+</ol>*@
