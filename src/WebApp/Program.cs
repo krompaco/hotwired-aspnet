@@ -1,4 +1,5 @@
 ﻿using System.IO.Compression;
+using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Logging.Console;
@@ -10,6 +11,8 @@ namespace WebApp;
 
 public class Program
 {
+    public static IServiceProvider ServiceProvider { get; private set; }
+
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
@@ -58,6 +61,8 @@ public class Program
         var logger = loggerFactory.CreateLogger<Program>();
 
         var app = builder.Build();
+
+        ServiceProvider = app.Services;
 
         logger.LogInformation("Starting the app");
 

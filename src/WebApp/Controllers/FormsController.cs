@@ -1,11 +1,18 @@
 ﻿using System.Collections.Generic;
 using Krompaco.AspNetCore.Hotwired.Extensions;
 using Krompaco.AspNetCore.Hotwired.TurboStreams;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Endpoints;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using WebApp.Extensions;
+using WebApp.Hubs;
 using WebApp.Models;
 using WebApp.Pages;
+using WebApp.Shared;
 
 namespace WebApp.Controllers;
 
@@ -13,9 +20,52 @@ public class FormsController : Controller
 {
     private readonly ILogger<FormsController> logger;
 
-    public FormsController(ILogger<FormsController> logger)
+    private readonly ILoggerFactory loggerFactory;
+
+    private readonly IHubContext<AppHub> hub;
+
+    public FormsController(ILogger<FormsController> logger, ILoggerFactory loggerFactory, IHubContext<AppHub> hub)
     {
         this.logger = logger;
+        this.loggerFactory = loggerFactory;
+        this.hub = hub;
+    }
+
+    [HttpPost]
+    public async Task<IResult> GlobalMessage(GlobalMessageFormModel postModel)
+    {
+        this.logger.LogInformation("Hello from GlobalMessage()");
+
+        var dictionary = new Dictionary<string, object?>
+        {
+            { "GlobalMessageFormModel", postModel },
+        };
+
+        var result = new RazorComponentResult<GlobalMessageForm>(dictionary.AsReadOnly());
+
+        ////if (!this.ModelState.IsValid)
+        ////{
+        ////    // This follows the recommendation to set status = 422 for validation errors
+        ////    this.Response.SetTurboValidationErrorStatus(this.Request);
+        ////    return result;
+        ////}
+
+        var alertModel = new Models.Alert(postModel.Message!);
+        var alertDictionary = new Dictionary<string, object?>
+                                {
+                                    { "AlertModel", alertModel },
+                                };
+        var html = await this.GetAsHtmlAsync<Shared.Alert>(alertDictionary);
+
+        var alertMessage = new TurboStreamMessage
+        {
+            Action = TurboStreamAction.Update,
+            Target = "js-alert-target",
+            TemplateInnerHtml = html,
+        };
+
+        await this.hub.Clients.All.SendAsync("GlobalMessageReceived", alertMessage.ToString());
+        return result;
     }
 
     ////[HttpPost]
@@ -95,4 +145,17 @@ public class FormsController : Controller
 
     ////    return this.Content(updateMessage.ToString() + removeFormMessage + alertMessage, TurboStreamMessage.MimeType);
     ////}
+
+    private async Task<string> GetAsHtmlAsync<T>(Dictionary<string, object?> dictionary)
+        where T : IComponent
+    {
+        var parameters = ParameterView.FromDictionary(dictionary);
+        await using var htmlRenderer = new HtmlRenderer(Program.ServiceProvider, this.loggerFactory);
+        var html = await htmlRenderer.Dispatcher.InvokeAsync(async () =>
+        {
+            var output = await htmlRenderer.RenderComponentAsync<T>(parameters);
+            return output.ToHtmlString();
+        });
+        return html;
+    }
 }
