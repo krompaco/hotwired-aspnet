@@ -50,15 +50,15 @@
                 @* Accessibility-wise it's most likely better to just set HTML required attributes on the inputs but I want to have a sample of model validation in here too *@
                 @*@await Component.InvokeAsync("ValidationSummary", this.Model)*@
 
-                <form asp-page="Index" method="post" class="space-y-6 mt-4">
+                <form action="/forms/index" method="post" class="space-y-6 mt-4">
                     <div>
-                        <label class="block" asp-for="IndexForm.Name"></label>
-                        <input class="mt-2" asp-for="IndexForm.Name" type="text">
+                        <label class="block" for="name-1"></label>
+                        <input class="mt-2" id="name-1" name="name" type="text" required>
                     </div>
 
                     <div>
-                        <label class="block" asp-for="IndexForm.Company"></label>
-                        <input class="mt-2" asp-for="IndexForm.Company" type="text">
+                        <label class="block" for="company-1"></label>
+                        <input class="mt-2" id="company-1" type="text" name="company" required>
                     </div>
 
                     <div>
@@ -72,9 +72,9 @@
                 <h3 class="mt-2 text-green-700 text-lg">Hi <em class="font-bold not-italic">@(this.TempStoredForm.Name?.Trim())</em> from <em class="font-bold not-italic">@(this.TempStoredForm.Company?.Trim())</em>!</h3>
 
                 @*if (this.ViewContext.HttpContext.Request.IsTurbo())
-                {
-                    @await Component.InvokeAsync("Alert", new Alert($"Hi {Model.TempStoredForm.Name?.Trim()} from {Model.TempStoredForm.Company?.Trim()}", AlertType.Information))
-                }*@
+            {
+            @await Component.InvokeAsync("Alert", new Alert($"Hi {Model.TempStoredForm.Name?.Trim()} from {Model.TempStoredForm.Company?.Trim()}", AlertType.Information))
+            }*@
 
                 <p class="mt-2"><a href="/?action=new" class="link-primary">Enter new data</a></p>
             }
@@ -117,10 +117,8 @@
     [Parameter]
     public IndexFormModel? TempStoredForm { get; set; }
 
-    ////public void OnGet()
-    ////{
-    ////    this.logger.LogInformation("Hello from OnGet()");
-
-    ////    this.TempStoredForm = this.TempData.Get<IndexFormModel>(nameof(this.IndexForm));
-    ////}
+    protected override async Task OnInitializedAsync()
+    {
+        ////this.TempStoredForm = this.TempData.Get<IndexFormModel>(nameof(this.IndexForm));
+    }
 }

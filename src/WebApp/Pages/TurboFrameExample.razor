@@ -15,16 +15,16 @@
 
             <form action="/forms/turboframeexample" method="post" class="space-y-6 mt-4">
                 <div>
-                    <label class="block" asp-for="TurboFrameExampleForm.Email"></label>
-                    <input class="mt-2" asp-for="TurboFrameExampleForm.Email" type="text">
+                    <label class="block" for="email-1"></label>
+                    <input class="mt-2" id="email-1" name="email" type="email" required>
                 </div>
 
-                <div class="relative flex items-start pl-1" id="e-RegisterUserForm.Accept">
+                <div class="relative flex items-start pl-1">
                     <div class="flex items-center h-5">
-                        <input asp-for="TurboFrameExampleForm.Accept" class="focus:ring-congress-blue h-4 w-4 text-blue-600 border-gray-500 rounded">
+                        <input type="checkbox" name="accept" value="true" for="accept-1" class="focus:ring-congress-blue h-4 w-4 text-blue-600 border-gray-500 rounded" required>
                     </div>
                     <div class="ml-2">
-                        <label asp-for="TurboFrameExampleForm.Accept" class="font-medium text-gray-700">Yes, I accept the terms and conditions.</label>
+                        <label id="accept-1" class="font-medium text-gray-700">Yes, I accept the terms and conditions.</label>
                     </div>
                 </div>
 

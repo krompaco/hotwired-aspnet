@@ -1,18 +1,12 @@
-﻿using System.Collections.Generic;
-using Krompaco.AspNetCore.Hotwired.Extensions;
-using Krompaco.AspNetCore.Hotwired.TurboStreams;
+﻿using Krompaco.AspNetCore.Hotwired.TurboStreams;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Endpoints;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using WebApp.Extensions;
 using WebApp.Hubs;
 using WebApp.Models;
 using WebApp.Pages;
-using WebApp.Shared;
 
 namespace WebApp.Controllers;
 
@@ -68,6 +62,7 @@ public class FormsController : Controller
         return result;
     }
 
+    // Example of responding with rendered Razor Component from a Controller or Razor Page model:
     ////[HttpPost]
     ////public IResult Contact(Contact.ContactFormPostModel postModel)
     ////{

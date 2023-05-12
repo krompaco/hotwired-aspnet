@@ -1,4 +1,4 @@
-﻿@page "/globalmessageform"
+@page "/globalmessageform"
 
 <PageTitle>Global message form page</PageTitle>
 
@@ -14,7 +14,7 @@
         <form action="/forms/globalmessage" method="post" class="space-y-6 mt-4">
             <div>
                 <label class="block" for="message-1"></label>
-                <input class="mt-2" id="message-1" name="message" type="text" value="@this.GlobalMessageFormModel?.Message">
+                <input class="mt-2" id="message-1" name="message" type="text" value="@this.GlobalMessageFormModel?.Message" required>
             </div>
 
             <div>
@@ -25,45 +25,6 @@
 </div>
 
 @code {
-    ////public GlobalMessageFormPageModel(ILogger<IndexModel> logger, RazorViewComponentToStringRenderer viewComponentToStringRenderer, IHubContext<AppHub> hub)
-    ////{
-    ////    this.logger = logger;
-    ////    this.viewComponentToStringRenderer = viewComponentToStringRenderer;
-    ////    this.hub = hub;
-    ////    this.GlobalMessageFormModel = new GlobalMessageFormModel();
-    ////}
-
     [Parameter]
     public GlobalMessageFormModel? GlobalMessageFormModel { get; set; }
-
-    ////public void OnGet()
-    ////{
-    ////    this.logger.LogInformation("Hello from OnGet()");
-    ////}
-
-    ////public async Task<IActionResult> OnPost()
-    ////{
-    ////    this.logger.LogInformation("Hello from OnPost()");
-
-    ////    if (!this.ModelState.IsValid)
-    ////    {
-    ////        // This follows the recommendation to set status = 422 for validation errors
-    ////        this.Response.SetTurboValidationErrorStatus(this.Request);
-    ////        return this.Page();
-    ////    }
-
-    ////    var alert = await this.viewComponentToStringRenderer.RenderAsync(
-    ////        "Alert",
-    ////        new Alert(this.GlobalMessageFormModel.Message!));
-
-    ////    var alertMessage = new TurboStreamMessage
-    ////        {
-    ////            Action = TurboStreamAction.Update,
-    ////            Target = "js-alert-target",
-    ////            TemplateInnerHtml = alert,
-    ////        };
-
-    ////    await this.hub.Clients.All.SendAsync("GlobalMessageReceived", alertMessage.ToString());
-    ////    return new EmptyResult();
-    ////}
- }
+}
