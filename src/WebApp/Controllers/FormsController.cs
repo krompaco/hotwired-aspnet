@@ -25,56 +25,6 @@ public class FormsController : Controller
         this.hub = hub;
     }
 
-    [HttpPost]
-    public async Task<IResult> GlobalMessage(GlobalMessageFormModel postModel)
-    {
-        this.logger.LogInformation("Hello from GlobalMessage()");
-
-        var dictionary = new Dictionary<string, object?>
-        {
-            { "GlobalMessageFormModel", postModel },
-        };
-
-        var result = new RazorComponentResult<GlobalMessageForm>(dictionary.AsReadOnly());
-
-        ////if (!this.ModelState.IsValid)
-        ////{
-        ////    // This follows the recommendation to set status = 422 for validation errors
-        ////    this.Response.SetTurboValidationErrorStatus(this.Request);
-        ////    return result;
-        ////}
-
-        var alertModel = new Models.Alert(postModel.Message!);
-        var alertDictionary = new Dictionary<string, object?>
-                                {
-                                    { "AlertModel", alertModel },
-                                };
-        var html = await this.GetAsHtmlAsync<Shared.Alert>(alertDictionary);
-
-        var alertMessage = new TurboStreamMessage
-        {
-            Action = TurboStreamAction.Update,
-            Target = "js-alert-target",
-            TemplateInnerHtml = html,
-        };
-
-        await this.hub.Clients.All.SendAsync("GlobalMessageReceived", alertMessage.ToString());
-        return result;
-    }
-
-    // Example of responding with rendered Razor Component from a Controller or Razor Page model:
-    ////[HttpPost]
-    ////public IResult Contact(Contact.ContactFormPostModel postModel)
-    ////{
-    ////    var dictionary = new Dictionary<string, object?>
-    ////    {
-    ////        { "FormPostModel", postModel },
-    ////    };
-
-    ////    var result = new RazorComponentResult<Contact>(dictionary.AsReadOnly());
-    ////    return result;
-    ////}
-
     ////[HttpPost]
     ////public IResult Player()
     ////{
@@ -140,17 +90,4 @@ public class FormsController : Controller
 
     ////    return this.Content(updateMessage.ToString() + removeFormMessage + alertMessage, TurboStreamMessage.MimeType);
     ////}
-
-    private async Task<string> GetAsHtmlAsync<T>(Dictionary<string, object?> dictionary)
-        where T : IComponent
-    {
-        var parameters = ParameterView.FromDictionary(dictionary);
-        await using var htmlRenderer = new HtmlRenderer(Program.ServiceProvider, this.loggerFactory);
-        var html = await htmlRenderer.Dispatcher.InvokeAsync(async () =>
-        {
-            var output = await htmlRenderer.RenderComponentAsync<T>(parameters);
-            return output.ToHtmlString();
-        });
-        return html;
-    }
 }

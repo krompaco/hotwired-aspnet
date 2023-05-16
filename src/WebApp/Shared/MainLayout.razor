@@ -27,7 +27,9 @@
 </head>
 <body class="h-full">
     <PageTitle>Blazor United version</PageTitle>
-    @Body
+    <CascadingModelBinder>
+        @Body
+    </CascadingModelBinder>
     <div id="js-alert-target" aria-live="polite"></div>
     <signalr-turbo-stream hub="AppHub" method="GlobalMessageReceived"></signalr-turbo-stream>
 </body>

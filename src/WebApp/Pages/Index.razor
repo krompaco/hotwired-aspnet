@@ -1,4 +1,10 @@
 @page "/"
+@using System.Text.Json;
+
+@inject FormDataProvider FormData
+@inject ILogger<GlobalMessageForm> Logger
+@inject SiteComponentRenderer ComponentRenderer
+@inject IDistributedCache DistributedCache
 
 <PageTitle>Index</PageTitle>
 
@@ -45,31 +51,29 @@
         <p class="mt-2">This form posts and keeps the values in temp data so we can show them after a 303 redirect which is the recommendation.</p>
 
         <turbo-frame id="js-turbo-frame-same-page" aria-live="polite">
-            @if (this.TempStoredForm == null)
+            @if (tempStoredForm == null)
             {
                 @* Accessibility-wise it's most likely better to just set HTML required attributes on the inputs but I want to have a sample of model validation in here too *@
                 @*@await Component.InvokeAsync("ValidationSummary", this.Model)*@
 
-                <form action="/forms/index" method="post" class="space-y-6 mt-4">
+                <EditForm method="post" Model="indexFormModel" OnValidSubmit="HandleSubmit" class="space-y-6 mt-4">
                     <div>
                         <label class="block" for="name-1"></label>
-                        <input class="mt-2" id="name-1" name="name" type="text" required>
+                        <InputText @bind-Value="indexFormModel.Name" id="name-1" class="mt-2" type="text" />
                     </div>
-
                     <div>
                         <label class="block" for="company-1"></label>
-                        <input class="mt-2" id="company-1" type="text" name="company" required>
+                        <InputText @bind-Value="indexFormModel.Company" id="company-1" class="mt-2" type="text" />
                     </div>
-
                     <div>
                         <button type="submit" class="button-primary">Submit form</button>
                     </div>
-                </form>
+                </EditForm>
             }
 
-            @if (this.TempStoredForm != null)
+            @if (tempStoredForm != null)
             {
-                <h3 class="mt-2 text-green-700 text-lg">Hi <em class="font-bold not-italic">@(this.TempStoredForm.Name?.Trim())</em> from <em class="font-bold not-italic">@(this.TempStoredForm.Company?.Trim())</em>!</h3>
+                <h3 class="mt-2 text-green-700 text-lg">Hi <em class="font-bold not-italic">@(tempStoredForm.Name?.Trim())</em> from <em class="font-bold not-italic">@(tempStoredForm.Company?.Trim())</em>!</h3>
 
                 @*if (this.ViewContext.HttpContext.Request.IsTurbo())
             {
@@ -111,14 +115,45 @@
 </Content>
 
 @code {
-    [Parameter]
-    public IndexFormModel? IndexForm { get; set; }
+    IndexFormModel indexFormModel = new();
+    IndexFormModel? tempStoredForm;
 
-    [Parameter]
-    public IndexFormModel? TempStoredForm { get; set; }
-
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        ////this.TempStoredForm = this.TempData.Get<IndexFormModel>(nameof(this.IndexForm));
+        // // if (!FormData.IsFormDataAvailable)
+        // // {
+        // //     var json = DistributedCache.GetString(nameof(IndexFormModel));
+
+        // //     if (json != null)
+        // //     {
+        // //         tempStoredForm = JsonSerializer.Deserialize<IndexFormModel?>(json);
+        // //         DistributedCache.Remove(nameof(IndexFormModel));
+        // //     }
+        // // }
+
+        // Manually model bind the form data using the FormDataProvider service
+        if (FormData.Entries.TryGetValue("Name", out var nameValues))
+        {
+            indexFormModel.Name = nameValues.First();
+        }
+
+        if (FormData.Entries.TryGetValue("Company", out var companyValues))
+        {
+            indexFormModel.Company = companyValues.First();
+        }
+    }
+
+    async Task HandleSubmit()
+    {
+        Logger.LogInformation("Hello from Index.HandleSubmit()");
+
+        if (string.IsNullOrWhiteSpace(indexFormModel?.Name) || string.IsNullOrWhiteSpace(indexFormModel?.Company))
+        {
+            return;
+        }
+
+        await DistributedCache.SetStringAsync(nameof(IndexFormModel), JsonSerializer.Serialize(indexFormModel));
+
+        tempStoredForm = indexFormModel;
     }
 }

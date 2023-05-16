@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Net.Http.Headers;
 using WebApp.Hubs;
+using WebApp.Services;
 using WebApp.Shared;
 
 namespace WebApp;
@@ -32,6 +33,8 @@ public class Program
         builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 
+        builder.Services.AddSingleton<SiteComponentRenderer>();
+
         builder.Services.AddResponseCompression(options =>
         {
             options.Providers.Add<BrotliCompressionProvider>();
@@ -48,7 +51,6 @@ public class Program
 
         builder.Services
             .AddControllers()
-            .AddSessionStateTempDataProvider()
             .AddViewOptions(options => { options.HtmlHelperOptions.ClientValidationEnabled = false; });
 
         builder.Services.AddSignalR();
@@ -103,17 +105,17 @@ public class Program
 
         app.MapRazorComponents<MainLayout>();
 
-        app.Use(async (context, next) =>
-        {
-            if (string.IsNullOrEmpty(context.Response.Headers.ContentType.ToString()))
-            {
-                context.Response.Headers.ContentType = "text/html; charset=UTF-8";
-                context.Response.Headers.CacheControl = "no-cache, no-store";
-                context.Response.Headers.Pragma = "no-cache";
-            }
+        ////app.Use(async (context, next) =>
+        ////{
+        ////    if (string.IsNullOrEmpty(context.Response.Headers.ContentType.ToString()))
+        ////    {
+        ////        context.Response.Headers.ContentType = "text/html; charset=UTF-8";
+        ////        context.Response.Headers.CacheControl = "no-cache, no-store";
+        ////        context.Response.Headers.Pragma = "no-cache";
+        ////    }
 
-            await next();
-        });
+        ////    await next();
+        ////});
 
         app.MapDefaultControllerRoute();
 
