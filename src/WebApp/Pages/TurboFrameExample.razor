@@ -1,64 +1,86 @@
-﻿@page "/turboframeexample"
+@page "/turboframeexample"
+
+@inject FormDataProvider FormData
+@inject ILogger<TurboFrameExample> Logger
+@inject SiteComponentRenderer ComponentRenderer
+@inject IHubContext<AppHub> hub
 
 <PageTitle>Turbo frame example page</PageTitle>
 
-<div class="bg-white rounded shadow p-4">
-    <h1 class="font-semibold tracking-tight text-xl">Turbo frame in other page test</h1>
+<Content>
+    <div class="bg-white rounded shadow p-4">
+        <h1 class="font-semibold tracking-tight text-xl">Turbo frame in other page test</h1>
 
-    <p class="mt-2">This page is typically not used on it's own. The Turbo Frame starts after this text.</p>
+        <p class="mt-2">This page is typically not used on it's own. The Turbo Frame starts after this text.</p>
 
-    <turbo-frame id="js-turbo-frame-other-page" aria-live="polite">
-        @*@if (Model.TempStoredForm == null)
-        {*@
+        <turbo-frame id="js-turbo-frame-other-page" aria-live="polite">
+            @*@if (Model.TempStoredForm == null)
+            {*@
             @* Accessibility-wise it's most likely better to just set HTML required attributes on the inputs but I want to have a sample of model validation in here too *@
             @*@await Component.InvokeAsync("ValidationSummary", this.Model)*@
 
-            <form action="/forms/turboframeexample" method="post" class="space-y-6 mt-4">
+            <EditForm action="/turboframeexample" method="post" class="space-y-6 mt-4" Model="turboFrameExampleForm" OnValidSubmit="HandleSubmit">
                 <div>
-                    <label class="block" for="email-1"></label>
-                    <input class="mt-2" id="email-1" name="email" type="email" required>
+                    <LabelFromDisplayName For="@(() => turboFrameExampleForm.Email)" ForId="email-1" />
+                    <InputText @bind-Value="turboFrameExampleForm.Email" id="email-1" class="mt-2" type="email" required />
                 </div>
 
                 <div class="relative flex items-start pl-1">
                     <div class="flex items-center h-5">
-                        <input type="checkbox" name="accept" value="true" for="accept-1" class="focus:ring-congress-blue h-4 w-4 text-blue-600 border-gray-500 rounded" required>
+                        <InputCheckbox @bind-Value="turboFrameExampleForm.Accept" id="accept-1" class="focus:ring-congress-blue h-4 w-4 text-blue-600 border-gray-500 rounded" required />
                     </div>
                     <div class="ml-2">
-                        <label id="accept-1" class="font-medium text-gray-700">Yes, I accept the terms and conditions.</label>
+                        <label for="accept-1" class="font-medium text-gray-700">Yes, I accept the terms and conditions.</label>
                     </div>
                 </div>
 
                 <div>
                     <button type="submit" class="button-primary">Submit form</button>
                 </div>
-            </form>
-        @*}*@
+            </EditForm>
+            @*}*@
 
-        @*@if (Model.TempStoredForm != null)
-        {
+            @*@if (Model.TempStoredForm != null)
+            {
             <h3 class="mt-2 text-green-700 text-lg">Hi <em class="font-bold not-italic">@(Model.TempStoredForm.Email?.Trim())</em>!</h3>
 
             if (this.ViewContext.HttpContext.Request.IsTurbo())
             {
-                @await Component.InvokeAsync("Alert", new Alert($"Hi {Model.TempStoredForm.Email?.Trim()}"))
+            @await Component.InvokeAsync("Alert", new Alert($"Hi {Model.TempStoredForm.Email?.Trim()}"))
             }
 
             <p class="mt-2"><a href="/TurboFrameExample?action=new" class="link-primary">Enter new data</a></p>
-        }*@
-    </turbo-frame>
-</div>
+            }*@
+        </turbo-frame>
+    </div>
+</Content>
 
 @code {
-    ////public TurboFrameExampleModel(ILogger<IndexModel> logger)
-    ////{
-    ////    this.logger = logger;
-    ////    this.TurboFrameExampleForm = new TurboFrameExampleFormModel();
-    ////}
+    TurboFrameExampleFormModel turboFrameExampleForm = new();
+    TurboFrameExampleFormModel? TempStoredForm;
 
-    ////[BindProperty]
-    ////public TurboFrameExampleFormModel TurboFrameExampleForm { get; set; }
+    protected override void OnInitialized()
+    {
+        // Manually model bind the form data using the FormDataProvider service
+        if (FormData.Entries.TryGetValue("Email", out var emailValues))
+        {
+            turboFrameExampleForm.Email = emailValues.First();
+        }
+    }
 
-    ////public TurboFrameExampleFormModel? TempStoredForm { get; set; }
+    protected async Task HandleSubmit()
+    {
+        Logger.LogInformation("Hello from TurboFrameExample.HandleSubmit()");
+
+        ////if (!this.ModelState.IsValid)
+        ////{
+        ////    // This follows the recommendation to set status = 422 for validation errors
+        ////    this.Response.SetTurboValidationErrorStatus(this.Request);
+        ////    return result;
+        ////}
+
+        
+    }
 
     ////public void OnGet()
     ////{

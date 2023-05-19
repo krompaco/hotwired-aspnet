@@ -1,0 +1,25 @@
+@using System.Reflection
+@using System.Linq.Expressions;
+@using System.ComponentModel;
+@typeparam T
+
+<label class="block" for="@this.ForId">@label</label>
+
+@code {
+    [Parameter] public Expression<Func<T>>? For { get; set; }
+    [Parameter] public string? ForId { get; set; }
+
+    private string label => GetDisplayName();
+
+    private string GetDisplayName()
+    {
+        if (ForId == null)
+        {
+            return "For is null";
+        }
+
+        var expression = (MemberExpression)For.Body;
+        var value = expression.Member.GetCustomAttribute(typeof(DisplayNameAttribute)) as DisplayNameAttribute;
+        return value?.DisplayName ?? expression.Member.Name ?? "Something went wrong";
+    }
+}

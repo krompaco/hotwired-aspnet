@@ -17,9 +17,9 @@
             @* Accessibility-wise it's most likely better to just set HTML required attributes on the inputs but I want to have a sample of model validation in here too *@
             @*@await Component.InvokeAsync("ValidationSummary", this.Model)*@
 
-            <EditForm method="post" Model="globalMessageFormModel" OnValidSubmit="HandleSubmit" class="space-y-6 mt-4">
+            <EditForm action="/globalmessageform" method="post" Model="globalMessageFormModel" OnValidSubmit="HandleSubmit" class="space-y-6 mt-4">
                 <div>
-                    <label class="block" for="message-1"></label>
+                    <LabelFromDisplayName For="@(() => globalMessageFormModel.Message)" ForId="message-1" />
                     <InputText @bind-Value="globalMessageFormModel.Message" id="message-1" class="mt-2" type="text" />
                 </div>
                 <div>
@@ -42,7 +42,7 @@
         }
     }
 
-    async Task HandleSubmit()
+    protected async Task HandleSubmit()
     {
         Logger.LogInformation("Hello from GlobalMessage.HandleSubmit()");
 
