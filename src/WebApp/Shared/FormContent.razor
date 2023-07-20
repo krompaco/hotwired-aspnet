@@ -1,0 +1,8 @@
+<div class="space-y-6 mt-4">
+    @ChildContent
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

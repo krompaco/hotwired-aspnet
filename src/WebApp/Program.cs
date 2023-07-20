@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging.Console;
 using Microsoft.Net.Http.Headers;
 using WebApp.Hubs;
 using WebApp.Services;
-using WebApp.Shared;
 
 namespace WebApp;
 
@@ -57,7 +56,7 @@ public class Program
 
         using var loggerFactory = LoggerFactory.Create(builderInside =>
         {
-            builderInside.AddSimpleConsole(i => i.ColorBehavior = LoggerColorBehavior.Disabled);
+            builderInside.AddSimpleConsole(i => i.ColorBehavior = LoggerColorBehavior.Default);
         });
 
         var logger = loggerFactory.CreateLogger<Program>();
@@ -103,7 +102,7 @@ public class Program
 
         app.UseRouting();
 
-        app.MapRazorComponents<MainLayout>();
+        app.MapRazorComponents<App>();
 
         ////app.Use(async (context, next) =>
         ////{

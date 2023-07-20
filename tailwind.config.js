@@ -8,6 +8,13 @@ module.exports = {
 		'./src/**/*.cs',
 		'./src/**/*_controller.js',
 	],
+	safelist: [
+		'turbo-progress-bar',
+		'validation-errors',
+		'validation-message',
+		'invalid',
+		'valid',
+	],
 	theme: {
 		extend: {
 			fontFamily: {
