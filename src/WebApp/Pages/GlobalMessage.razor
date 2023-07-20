@@ -1,9 +1,9 @@
-@page "/globalmessageform"
+@page "/globalmessage"
 
-@inject FormDataProvider FormData
-@inject ILogger<GlobalMessageForm> Logger
+@inject ILogger<GlobalMessage> Logger
 @inject SiteComponentRenderer ComponentRenderer
 @inject IHubContext<AppHub> Hub
+@inject IHttpContextAccessor HttpContextAccessor;
 
 <PageTitle>Global message form page</PageTitle>
 
@@ -14,13 +14,13 @@
         <p class="mt-2">This page is typically not used on it's own. The Turbo Frame starts after this text.</p>
 
         <turbo-frame id="js-global-message-form" aria-live="polite">
-            <EditForm action="/globalmessageform" method="post" Model="GlobalMessage" OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="HandleInvalidSubmit">
+            <EditForm action="/globalmessage" method="post" Model="GlobalMessageForm" OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="HandleInvalidSubmit">
                 <FormContent>
                     <DataAnnotationsValidator />
                     <ValidationSummary />
                     <div>
-                        <LabelFromDisplayName For="@(() => GlobalMessage.Message)" ForId="message-1" />
-                        <InputText @bind-Value="GlobalMessage.Message" id="message-1" class="mt-2" type="text" />
+                        <LabelFromDisplayName For="@(() => GlobalMessageForm.Message)" ForId="message-1" />
+                        <InputText @bind-Value="GlobalMessageForm.Message" id="message-1" class="mt-2" type="text" />
                     </div>
                     <div>
                         <button type="submit" class="button-primary">Send message</button>
@@ -33,22 +33,21 @@
 
 @code {
     [SupplyParameterFromForm]
-    protected GlobalMessageFormModel GlobalMessage { get; set; } = new();
+    protected GlobalMessageFormModel GlobalMessageForm { get; set; } = new();
 
     protected async Task HandleInvalidSubmit()
     {
-        Logger.LogInformation("Hello from GlobalMessageForm.HandleInvalidSubmit()");
+        Logger.LogInformation("Hello from GlobalMessage.HandleInvalidSubmit()");
 
         // This follows the recommendation to set status = 422 for validation errors
-        ////this.Response.SetTurboValidationErrorStatus(this.Request);
-        ////return result;
+        this.HttpContextAccessor.HttpContext?.Response.SetTurboValidationErrorStatus(this.HttpContextAccessor.HttpContext.Request);
     }
 
     protected async Task HandleValidSubmit()
     {
-        Logger.LogInformation("Hello from GlobalMessageForm.HandleValidSubmit()");
+        Logger.LogInformation("Hello from GlobalMessage.HandleValidSubmit()");
 
-        var alertModel = new Models.Alert(this.GlobalMessage.Message!);
+        var alertModel = new Models.Alert(this.GlobalMessageForm.Message!);
         var alertDictionary = new Dictionary<string, object?>
                                 {
                                     { "AlertModel", alertModel },

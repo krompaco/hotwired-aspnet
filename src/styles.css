@@ -33,7 +33,6 @@
 	}
 
 	/* ul.validation-errors > li.validation-message {
-		@apply text-red-600 mt-1 p-4 bg-gray-50;
 	} */
 
 	div.validation-message {

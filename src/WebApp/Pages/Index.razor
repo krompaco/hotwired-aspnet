@@ -1,10 +1,10 @@
 @page "/"
 @using System.Text.Json;
 
-@inject FormDataProvider FormData
-@inject ILogger<GlobalMessageForm> Logger
+@inject ILogger<Index> Logger
 @inject SiteComponentRenderer ComponentRenderer
 @inject IDistributedCache DistributedCache
+@inject IHttpContextAccessor HttpContextAccessor;
 
 <PageTitle>Index</PageTitle>
 
@@ -40,7 +40,7 @@
 
         <p class="mt-2">This form responds with a SignalR global message.</p>
 
-        <turbo-frame id="js-global-message-form" aria-live="polite" src="/globalmessageform" loading="lazy">
+        <turbo-frame id="js-global-message-form" aria-live="polite" src="/globalmessage" loading="lazy">
             <Spinner />
         </turbo-frame>
     </div>
@@ -53,21 +53,25 @@
         <turbo-frame id="js-turbo-frame-same-page" aria-live="polite">
             @if (tempStoredForm == null)
             {
-                @* Accessibility-wise it's most likely better to just set HTML required attributes on the inputs but I want to have a sample of model validation in here too *@
-                @*@await Component.InvokeAsync("ValidationSummary", this.Model)*@
-
-                <EditForm action="/" method="post" Model="indexFormModel" OnValidSubmit="HandleSubmit" class="space-y-6 mt-4">
-                    <div>
-                        <LabelFromDisplayName For="@(() => indexFormModel.Name)" ForId="name-1" />
-                        <InputText @bind-Value="indexFormModel.Name" id="name-1" class="mt-2" type="text" />
-                    </div>
-                    <div>
-                        <LabelFromDisplayName For="@(() => indexFormModel.Company)" ForId="company-1" />
-                        <InputText @bind-Value="indexFormModel.Company" id="company-1" class="mt-2" type="text" />
-                    </div>
-                    <div>
-                        <button type="submit" class="button-primary">Submit form</button>
-                    </div>
+                <EditForm action="/" method="post" Model="IndexForm" OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="HandleInvalidSubmit">
+                    <FormContent>
+                        @* Accessibility-wise it's most likely better to just set HTML required attributes on the inputs but I want to have a sample of model validation in here too *@
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        <div>
+                            <LabelFromDisplayName For="@(() => IndexForm.Name)" ForId="name-1" />
+                            <InputText @bind-Value="IndexForm.Name" id="name-1" class="mt-2" type="text" />
+                            <ValidationMessage For="() => IndexForm.Name" />
+                        </div>
+                        <div>
+                            <LabelFromDisplayName For="@(() => IndexForm.Company)" ForId="company-1" />
+                            <InputText @bind-Value="IndexForm.Company" id="company-1" class="mt-2" type="text" />
+                            <ValidationMessage For="() => IndexForm.Company" />
+                        </div>
+                        <div>
+                            <button type="submit" class="button-primary">Submit form</button>
+                        </div>
+                    </FormContent>
                 </EditForm>
             }
 
@@ -75,10 +79,10 @@
             {
                 <h3 class="mt-2 text-green-700 text-lg">Hi <em class="font-bold not-italic">@(tempStoredForm.Name?.Trim())</em> from <em class="font-bold not-italic">@(tempStoredForm.Company?.Trim())</em>!</h3>
 
-                @*if (this.ViewContext.HttpContext.Request.IsTurbo())
-            {
-            @await Component.InvokeAsync("Alert", new Alert($"Hi {Model.TempStoredForm.Name?.Trim()} from {Model.TempStoredForm.Company?.Trim()}", AlertType.Information))
-            }*@
+                @if (htmlAlert != null)
+                {
+                    @((MarkupString)htmlAlert)
+                }
 
                 <p class="mt-2"><a href="/?action=new" class="link-primary">Enter new data</a></p>
             }
@@ -95,65 +99,61 @@
         </turbo-frame>
     </div>
 
-    <div class="mt-10 bg-white rounded shadow p-4">
-        <div class="prose">
-            <h2>Typography example from <a href="https://www.cipsum.com/">Corporate Ipsum</a></h2>
-
-            <p class="lead">Leverage agile frameworks to provide a robust synopsis for high level overviews.</p>
-
-            <p>Iterative approaches to corporate strategy foster collaborative thinking to further the overall value proposition. Organically grow the holistic world view of disruptive innovation via workplace diversity and empowerment.</p>
-
-            <ul>
-                <li>Bring to the table win-win survival strategies to ensure proactive domination.</li>
-                <li>At the end of the day, going forward, a new normal that has evolved from generation X is on the runway heading towards a streamlined cloud solution.</li>
-                <li>User generated content in real-time will have multiple touchpoints for offshoring.</li>
-            </ul>
-
-            <p>Capitalize on low hanging fruit to identify a ballpark value added activity to beta test. Override the digital divide with additional clickthroughs from DevOps. Nanotechnology immersion along the information highway will close the loop on focusing solely on the bottom line.</p>
-        </div>
-    </div>
+    <TypographyBlock />
 </Content>
 
 @code {
-    IndexFormModel indexFormModel = new();
-    IndexFormModel? tempStoredForm;
+    [SupplyParameterFromForm]
+    protected IndexFormModel IndexForm { get; set; } = new();
 
-    protected override void OnInitialized()
+    private IndexFormModel? tempStoredForm;
+
+    private string? htmlAlert;
+
+    protected override async Task OnInitializedAsync()
     {
-        // // if (!FormData.IsFormDataAvailable)
-        // // {
-        // //     var json = DistributedCache.GetString(nameof(IndexFormModel));
+        Logger.LogInformation("Hello from Index.OnInitialized()");
 
-        // //     if (json != null)
-        // //     {
-        // //         tempStoredForm = JsonSerializer.Deserialize<IndexFormModel?>(json);
-        // //         DistributedCache.Remove(nameof(IndexFormModel));
-        // //     }
-        // // }
-
-        // Manually model bind the form data using the FormDataProvider service
-        if (FormData.Entries.TryGetValue("Name", out var nameValues))
-        {
-            indexFormModel.Name = nameValues.First();
-        }
-
-        if (FormData.Entries.TryGetValue("Company", out var companyValues))
-        {
-            indexFormModel.Company = companyValues.First();
-        }
-    }
-
-    async Task HandleSubmit()
-    {
-        Logger.LogInformation("Hello from Index.HandleSubmit()");
-
-        if (string.IsNullOrWhiteSpace(indexFormModel?.Name) || string.IsNullOrWhiteSpace(indexFormModel?.Company))
+        if (this.HttpContextAccessor.HttpContext!.Request.IsPost())
         {
             return;
         }
 
-        await DistributedCache.SetStringAsync(nameof(IndexFormModel), JsonSerializer.Serialize(indexFormModel));
+        var json = this.DistributedCache.GetString(nameof(IndexFormModel));
 
-        tempStoredForm = indexFormModel;
+        if (json != null)
+        {
+            this.tempStoredForm = JsonSerializer.Deserialize<IndexFormModel>(json);
+
+            this.DistributedCache.Remove(nameof(IndexFormModel));
+
+            if (this.HttpContextAccessor.HttpContext!.Request.IsTurbo())
+            {
+                var alertModel = new Models.Alert($"Hi {tempStoredForm?.Name?.Trim()} from {tempStoredForm?.Company?.Trim()}", AlertType.Information);
+                var alertDictionary = new Dictionary<string, object?>
+                    {
+                        { "AlertModel", alertModel },
+                    };
+                this.htmlAlert = await this.ComponentRenderer.GetAsHtmlAsync<Shared.Alert>(alertDictionary);
+            }
+        }
+    }
+
+    protected async Task HandleInvalidSubmit()
+    {
+        Logger.LogInformation("Hello from Index.HandleInvalidSubmit()");
+
+        // This follows the recommendation to set status = 422 for validation errors
+        this.HttpContextAccessor.HttpContext?.Response.SetTurboValidationErrorStatus(this.HttpContextAccessor.HttpContext.Request);
+    }
+
+    protected async Task HandleValidSubmit()
+    {
+        Logger.LogInformation("Hello from Index.HandleValidSubmit()");
+
+        await this.DistributedCache.SetStringAsync(nameof(IndexFormModel), JsonSerializer.Serialize(this.IndexForm));
+
+        // This redirects with 303 which is recommended for both Turbo page and frame posts
+        this.HttpContextAccessor.HttpContext?.Response.SetTurboRedirectStatus("/");
     }
 }

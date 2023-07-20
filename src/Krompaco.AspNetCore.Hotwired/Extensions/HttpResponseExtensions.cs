@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Krompaco.AspNetCore.Hotwired.Extensions;
 
@@ -16,10 +15,10 @@ public static class HttpResponseExtensions
             };
     }
 
-    public static StatusCodeResult TurboRedirectStatusResult(this HttpResponse response, string location)
+    public static void SetTurboRedirectStatus(this HttpResponse response, string location)
     {
         response.Headers.Location = location;
-        return new StatusCodeResult(303);
+        response.StatusCode = 303;
     }
 
     public static void SetTurboValidationErrorStatus(this HttpResponse response, HttpRequest request)
