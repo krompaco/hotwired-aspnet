@@ -52,7 +52,7 @@
                                 {
                                     { "AlertModel", alertModel },
                                 };
-        var html = await this.ComponentRenderer.GetAsHtmlAsync<Shared.Alert>(alertDictionary);
+        var html = await this.ComponentRenderer.GetAsHtmlAsync<AlertComponent>(alertDictionary);
 
         var alertMessage = new TurboStreamMessage
             {

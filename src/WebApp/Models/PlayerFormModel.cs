@@ -7,12 +7,12 @@ public class PlayerFormModel
 {
     public PlayerFormModel()
     {
-        this.Id = Guid.Empty;
+        this.Id = Guid.Empty.ToString("D");
         this.Name = string.Empty;
         this.Ranking = 500;
     }
 
-    public Guid Id { get; set; }
+    public string Id { get; set; }
 
     [DisplayName("Enter name:")]
     [Required(ErrorMessage = "Name is a required field.")]

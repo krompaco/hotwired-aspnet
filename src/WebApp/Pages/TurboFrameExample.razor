@@ -3,8 +3,8 @@
 
 @inject ILogger<TurboFrameExample> Logger
 @inject SiteComponentRenderer ComponentRenderer
-@inject IDistributedCache DistributedCache
-@inject IHttpContextAccessor HttpContextAccessor;
+@inject IHttpContextAccessor HttpContextAccessor
+@inject WebAppDatabase WebAppDatabase
 
 <PageTitle>Turbo frame example page</PageTitle>
 
@@ -54,7 +54,7 @@
                     @((MarkupString)htmlAlert)
                 }
 
-                <p class="mt-2"><a href="/TurboFrameExample?action=new" class="link-primary">Enter new data</a></p>
+                <p class="mt-2"><a href="/turboframeexample?action=new" class="link-primary">Enter new data</a></p>
             }
         </turbo-frame>
     </div>
@@ -68,22 +68,24 @@
 
     private string? htmlAlert;
 
+    private string sessionKey;
+
     protected override async Task OnInitializedAsync()
     {
         Logger.LogInformation("Hello from Index.OnInitialized()");
+
+        this.sessionKey = this.HttpContextAccessor.HttpContext?.Session.Id + nameof(TurboFrameExample);
 
         if (this.HttpContextAccessor.HttpContext!.Request.IsPost())
         {
             return;
         }
 
-        var json = this.DistributedCache.GetString(nameof(TurboFrameExampleFormModel));
+        this.tempStoredForm = this.WebAppDatabase.Get<TurboFrameExampleFormModel>(this.sessionKey);
 
-        if (json != null)
+        if (this.tempStoredForm != null)
         {
-            this.tempStoredForm = JsonSerializer.Deserialize<TurboFrameExampleFormModel>(json);
-
-            this.DistributedCache.Remove(nameof(TurboFrameExampleFormModel));
+            this.HttpContextAccessor.HttpContext.Session.Remove(this.sessionKey);
 
             if (this.HttpContextAccessor.HttpContext!.Request.IsTurbo())
             {
@@ -92,7 +94,7 @@
                     {
                         { "AlertModel", alertModel },
                     };
-                this.htmlAlert = await this.ComponentRenderer.GetAsHtmlAsync<Shared.Alert>(alertDictionary);
+                this.htmlAlert = await this.ComponentRenderer.GetAsHtmlAsync<AlertComponent>(alertDictionary);
             }
         }
     }
@@ -109,7 +111,7 @@
     {
         Logger.LogInformation("Hello from TurboFrameExample.HandleValidSubmit()");
 
-        await DistributedCache.SetStringAsync(nameof(TurboFrameExampleFormModel), JsonSerializer.Serialize(this.TurboFrameExampleForm));
+        this.WebAppDatabase.Set<TurboFrameExampleFormModel>(this.sessionKey, this.TurboFrameExampleForm);
 
         // This redirects with 303 which is recommended for both Turbo page and frame posts
         this.HttpContextAccessor.HttpContext?.Response.SetTurboRedirectStatus("/turboframeexample");

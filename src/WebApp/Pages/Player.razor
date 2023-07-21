@@ -1,0 +1,163 @@
+@page "/player"
+
+@inject ILogger<Player> Logger
+@inject SiteComponentRenderer ComponentRenderer
+@inject NavigationManager NavigationManager
+@inject IHttpContextAccessor HttpContextAccessor
+@inject WebAppDatabase WebAppDatabase
+
+<PageTitle>Player Form</PageTitle>
+
+@if (this.turboStreamBody != null)
+{
+    @((MarkupString)this.turboStreamBody)
+}
+else
+{
+    <Content>
+        <turbo-frame id="js-player-form" aria-live="polite">
+            <div class="pointer-events-none fixed inset-0 flex items-end px-1 py-5 sm:items-start sm:p-5">
+                <div class="flex w-full flex-col items-center space-y-4 sm:items-start">
+                    <div class="pointer-events-auto w-full max-w-sm rounded bg-white shadow-lg ring-1 ring-black ring-opacity-5">
+                        <div class="p-4">
+                            <div class="flex items-start">
+                                <div class="ml-3 w-0 flex-1">
+                                    @* Accessibility-wise it's most likely better to just set HTML required attributes on the inputs but I want to have a sample of model validation in here too *@
+                                    <EditForm action="@(new Uri(this.NavigationManager.Uri).PathAndQuery)" method="post" Model="PlayerForm" OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="HandleInvalidSubmit">
+                                        <FormContent>
+                                            <DataAnnotationsValidator />
+                                            <ValidationSummary />
+                                            <InputText @bind-Value="PlayerForm.Id" type="hidden" />
+                                            <div>
+                                                <LabelFromDisplayName For="@(() => PlayerForm.Name)" ForId="name-1" />
+                                                <InputText @bind-Value="PlayerForm.Name" id="name-1" class="mt-2" type="text" />
+                                                <ValidationMessage For="() => PlayerForm.Name" />
+                                            </div>
+                                            <div>
+                                                <LabelFromDisplayName For="@(() => PlayerForm.Ranking)" ForId="ranking-1" />
+                                                <InputNumber @bind-Value="PlayerForm.Ranking" id="ranking-1" class="mt-2" />
+                                            </div>
+                                            <div>
+                                                <button type="submit" class="button-primary">Save player</button>
+                                            </div>
+                                        </FormContent>
+                                    </EditForm>
+                                </div>
+                                <div class="ml-4 flex flex-shrink-0">
+                                    <a href="/playerempty" class="inline-flex rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                        <span class="sr-only">Close</span>
+                                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                            <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+                                        </svg>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </turbo-frame>
+    </Content>
+}
+
+@code {
+    [SupplyParameterFromQuery(Name = "id")]
+    public string Id { get; set; }
+
+    [SupplyParameterFromForm]
+    public PlayerFormModel PlayerForm { get; set; } = new();
+
+    private string sessionKey;
+
+    private string? turboStreamBody;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Logger.LogInformation("Hello from Player.OnInitialized() " + this.Id);
+
+        this.sessionKey = this.HttpContextAccessor.HttpContext?.Session.Id + nameof(PlayerList);
+
+        if (this.HttpContextAccessor.HttpContext!.Request.IsPost())
+        {
+            return;
+        }
+
+        // Do stuff on GET
+        var all = this.WebAppDatabase.Get<List<PlayerFormModel>>(this.sessionKey);
+        var match = all?.SingleOrDefault(x => x.Id == this.Id);
+
+        if (match == null)
+        {
+            this.PlayerForm.Id = Guid.NewGuid().ToString("D");
+            return;
+        }
+
+        this.PlayerForm.Id = match.Id;
+        this.PlayerForm.Name = match.Name;
+        this.PlayerForm.Ranking = match.Ranking;
+    }
+
+    protected async Task HandleInvalidSubmit()
+    {
+        Logger.LogInformation("Hello from Player.HandleInvalidSubmit()");
+
+        // This follows the recommendation to set status = 422 for validation errors
+        this.HttpContextAccessor.HttpContext?.Response.SetTurboValidationErrorStatus(this.HttpContextAccessor.HttpContext.Request);
+    }
+
+    protected async Task HandleValidSubmit()
+    {
+        Logger.LogInformation("Hello from Player.HandleValidSubmit() " + this.PlayerForm.Id);
+
+        var all = this.WebAppDatabase.Get<List<PlayerFormModel>>(this.sessionKey) ?? new List<PlayerFormModel>();
+
+        var match = all?.SingleOrDefault(x => x.Id == this.PlayerForm.Id);
+        var playerAdded = false;
+
+        if (match == null)
+        {
+            match = new PlayerFormModel { Id = this.PlayerForm.Id };
+            all.Add(match);
+            playerAdded = true;
+        }
+
+        var rankingUpdated = match.Ranking != this.PlayerForm.Ranking;
+
+        match.Name = this.PlayerForm.Name;
+        match.Ranking = this.PlayerForm.Ranking;
+
+        this.WebAppDatabase.Set<List<PlayerFormModel>>(this.sessionKey, all);
+
+        // NOTE: The following is not done by progressive enhancement but to show how to use Turbo Streams in a bit more varied way
+        var updateMessage = rankingUpdated || playerAdded ? new TurboStreamMessage
+            {
+                Action = TurboStreamAction.Replace,
+                Target = "js-player-list",
+                TemplateInnerHtml = await this.ComponentRenderer.GetAsHtmlAsync<PlayerListComponent>(new Dictionary<string, object?> { { "AllPlayers", all.OrderBy(x => x.Ranking).ToList() } }),
+            }
+        : new TurboStreamMessage
+            {
+                Action = TurboStreamAction.Update,
+                Target = "js-player-list-item-" + this.PlayerForm.Id,
+                TemplateInnerHtml = await this.ComponentRenderer.GetAsHtmlAsync<PlayerListItem>(new Dictionary<string, object?> { { "Player", match } }),
+            };
+
+        var alert = await this.ComponentRenderer.GetAsHtmlAsync<AlertComponent>(new Dictionary<string, object?> { { "AlertModel", new Alert(match.Name + " was saved.") } });
+        var alertMessage = new TurboStreamMessage
+            {
+                Action = TurboStreamAction.Update,
+                Target = "js-alert-target",
+                TemplateInnerHtml = alert,
+            };
+
+        var removeFormMessage = new TurboStreamMessage
+            {
+                Action = TurboStreamAction.Update,
+                Target = "js-player-form",
+                TemplateInnerHtml = "<!-- Emptied after update -->",
+            };
+
+        this.turboStreamBody = updateMessage.ToString() + removeFormMessage + alertMessage;
+        this.HttpContextAccessor.HttpContext.Response.ContentType = TurboStreamMessage.MimeType;
+    }
+}

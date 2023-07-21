@@ -1,5 +1,6 @@
 ﻿using System.IO.Compression;
 using System.Runtime.CompilerServices;
+using System.Text;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Logging.Console;
@@ -11,7 +12,9 @@ namespace WebApp;
 
 public class Program
 {
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public static IServiceProvider ServiceProvider { get; private set; }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     public static void Main(string[] args)
     {
@@ -27,6 +30,7 @@ public class Program
             options.IdleTimeout = TimeSpan.FromMinutes(20);
             options.Cookie.HttpOnly = true;
             options.Cookie.IsEssential = true;
+            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
         });
 
         builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -61,22 +65,15 @@ public class Program
 
         var logger = loggerFactory.CreateLogger<Program>();
 
+        // Setup a fake data store
+        var db = new WebAppDatabase();
+        builder.Services.AddSingleton(db);
+
         var app = builder.Build();
 
         ServiceProvider = app.Services;
 
         logger.LogInformation("Starting the app");
-
-        app.Use(async (context, next) =>
-        {
-            var nonce = Guid.NewGuid().ToString("N");
-            context.Items["csp-nonce"] = nonce;
-
-            var param = Guid.NewGuid().ToString("N");
-            context.Items["csrf-param"] = param;
-
-            await next();
-        });
 
         app.UseResponseCompression();
 
@@ -98,9 +95,23 @@ public class Program
             },
         });
 
+        app.UseRouting();
+
         app.UseSession();
 
-        app.UseRouting();
+        app.Use(async (context, next) =>
+        {
+            var nonce = Guid.NewGuid().ToString("N");
+            context.Items["csp-nonce"] = nonce;
+
+            var param = Guid.NewGuid().ToString("N");
+            context.Items["csrf-param"] = param;
+
+            // Hack to get session cookie with ID
+            context.Session.SetString("csrf-set-at", DateTime.UtcNow.ToString("HH:mm:ss"));
+
+            await next();
+        });
 
         app.MapRazorComponents<App>();
 

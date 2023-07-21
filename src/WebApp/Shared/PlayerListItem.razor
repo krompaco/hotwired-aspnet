@@ -1,14 +1,21 @@
-﻿@*<h2 class="font-extrabold inline">
-    @Model.Name <span class="font-medium text-gray-600">#@Model.Ranking</span>
-</h2>
+@if (this.Player != null)
+{
+    <h2 class="font-extrabold inline">
+        @this.Player.Name <span class="font-medium text-gray-600">#@this.Player.Ranking</span>
+    </h2>
 
-<div class="flex mt-2 space-x-2 items-center">
-    <a class="link-primary" asp-page="/PlayerForm" asp-route-id="@Model.Id.ToString("D")" data-turbo-frame="js-player-form">
-        Edit <span class="sr-only">@Model.Name</span>
-    </a>
-    <form asp-page="/PlayerList" asp-page-handler="Delete" method="post">
-        <input type="hidden" name="id" value="@Model.Id.ToString("D")"/>
-        <button class="link-primary" type="submit">Delete</button>
-    </form>
-</div>
-*@
+    <div class="flex mt-2 space-x-2 items-center">
+        <a class="link-primary" href="/player?id=@this.Player.Id" data-turbo-frame="js-player-form">
+            Edit <span class="sr-only">@this.Player.Name</span>
+        </a>
+        <form action="/playerlist" method="post">
+            <input type="hidden" name="id" value="@this.Player.Id" />
+            <button class="link-primary" type="submit">Delete</button>
+        </form>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public PlayerFormModel? Player { get; set; }
+}

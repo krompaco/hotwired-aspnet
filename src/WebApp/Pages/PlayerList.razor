@@ -1,5 +1,11 @@
 @page "/playerlist"
 
+@inject ILogger<PlayerList> Logger
+@inject SiteComponentRenderer ComponentRenderer
+@inject NavigationManager NavigationManager
+@inject IHttpContextAccessor HttpContextAccessor
+@inject WebAppDatabase WebAppDatabase
+
 <PageTitle>Player list page</PageTitle>
 
 <Content>
@@ -17,25 +23,34 @@
         <p class="mt-2">This page has examples of Turbo Stream messages.</p>
 
         <p class="mt-2">
-            <a class="link-primary" href="/playerform/@Guid.Empty.ToString("D")" data-turbo-frame="js-player-form">Add new player</a>
+            <a class="link-primary" href="/player?id=@Guid.Empty.ToString("D")" data-turbo-frame="js-player-form">Add new player</a>
         </p>
 
-        @*@await Component.InvokeAsync("PlayerList", this.Model.AllPlayers)*@
+        <PlayerListComponent AllPlayers="this.AllPlayers" />
 
         <turbo-frame id="js-player-form" aria-live="polite"></turbo-frame>
     </div>
 </Content>
 
 @code {
-    ////public PlayerListPageModel(ILogger<IndexModel> logger, RazorViewComponentToStringRenderer viewComponentToStringRenderer)
-    ////{
-    ////    this.logger = logger;
-    ////    this.viewComponentToStringRenderer = viewComponentToStringRenderer;
+    public List<PlayerFormModel> AllPlayers { get; set; }
 
-    ////    this.AllPlayers = new List<PlayerFormModel>();
-    ////}
+    private string sessionKey;
 
-    ////public List<PlayerFormModel> AllPlayers { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        Logger.LogInformation("Hello from PlayerList.OnInitialized()");
+
+        this.sessionKey = this.HttpContextAccessor.HttpContext.Session.Id + nameof(PlayerList);
+
+        if (this.HttpContextAccessor.HttpContext!.Request.IsPost())
+        {
+            return;
+        }
+
+        // Do stuff on GET
+        this.AllPlayers = this.WebAppDatabase.Get<List<PlayerFormModel>>(this.sessionKey);
+    }
 
     ////public void OnGet()
     ////{
