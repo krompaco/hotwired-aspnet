@@ -8,7 +8,7 @@
         <a class="link-primary" href="/player?id=@this.Player.Id" data-turbo-frame="js-player-form">
             Edit <span class="sr-only">@this.Player.Name</span>
         </a>
-        <form action="/playerlist" method="post">
+        <form action="/forms/deleteplayer" method="post">
             <input type="hidden" name="id" value="@this.Player.Id" />
             <button class="link-primary" type="submit">Delete</button>
         </form>
