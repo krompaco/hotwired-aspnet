@@ -18,7 +18,7 @@
             @if (tempStoredForm == null)
             {
                 @* Accessibility-wise it's most likely better to just set HTML required attributes on the inputs but I want to have a sample of model validation in here too *@
-                <EditForm action="/turboframeexample" method="post" Model="TurboFrameExampleForm" OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="HandleInvalidSubmit">
+                <EditForm action="/turboframeexample" FormName="turboframeexample" method="post" Model="TurboFrameExampleForm" OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="HandleInvalidSubmit">
                     <FormContent>
                         <DataAnnotationsValidator />
                         <ValidationSummary />
@@ -85,16 +85,12 @@
 
         if (this.tempStoredForm != null)
         {
-            this.HttpContextAccessor.HttpContext.Session.Remove(this.sessionKey);
+            this.WebAppDatabase.Remove(this.sessionKey);
 
             if (this.HttpContextAccessor.HttpContext!.Request.IsTurbo())
             {
                 var alertModel = new Models.Alert($"Hi {this.tempStoredForm?.Email?.Trim()}!");
-                var alertDictionary = new Dictionary<string, object?>
-                    {
-                        { "AlertModel", alertModel },
-                    };
-                this.htmlAlert = await this.ComponentRenderer.GetAsHtmlAsync<AlertComponent>(alertDictionary);
+                this.htmlAlert = await this.ComponentRenderer.GetAlertAsHtmlAsync(alertModel);
             }
         }
     }

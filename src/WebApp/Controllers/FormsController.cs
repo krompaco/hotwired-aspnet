@@ -48,11 +48,7 @@ public class FormsController : Controller
             };
 
             var alertModel = new Alert(match.Name + " was deleted.", AlertType.Information);
-            var alertDictionary = new Dictionary<string, object?>
-                    {
-                        { "AlertModel", alertModel },
-                    };
-            var alertHtml = await this.componentRenderer.GetAsHtmlAsync<AlertComponent>(alertDictionary);
+            var alertHtml = await this.componentRenderer.GetAlertAsHtmlAsync(alertModel);
 
             var alertMessage = new TurboStreamMessage
             {

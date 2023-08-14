@@ -52,7 +52,7 @@
         <turbo-frame id="js-turbo-frame-same-page" aria-live="polite">
             @if (tempStoredForm == null)
             {
-                <EditForm action="/" method="post" Model="IndexForm" OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="HandleInvalidSubmit">
+                <EditForm action="/" method="post" FormName="index" Model="IndexForm" OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="HandleInvalidSubmit">
                     <FormContent>
                         @* Accessibility-wise it's most likely better to just set HTML required attributes on the inputs but I want to have a sample of model validation in here too *@
                         <DataAnnotationsValidator />
@@ -131,11 +131,7 @@
             if (this.HttpContextAccessor.HttpContext!.Request.IsTurbo())
             {
                 var alertModel = new Models.Alert($"Hi {tempStoredForm?.Name?.Trim()} from {tempStoredForm?.Company?.Trim()}", AlertType.Information);
-                var alertDictionary = new Dictionary<string, object?>
-                    {
-                        { "AlertModel", alertModel },
-                    };
-                this.htmlAlert = await this.ComponentRenderer.GetAsHtmlAsync<AlertComponent>(alertDictionary);
+                this.htmlAlert = await this.ComponentRenderer.GetAlertAsHtmlAsync(alertModel);
             }
         }
     }

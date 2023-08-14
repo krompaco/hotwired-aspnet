@@ -14,7 +14,7 @@
         <p class="mt-2">This page is typically not used on it's own. The Turbo Frame starts after this text.</p>
 
         <turbo-frame id="js-global-message-form" aria-live="polite">
-            <EditForm action="/globalmessage" method="post" Model="GlobalMessageForm" OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="HandleInvalidSubmit">
+            <EditForm action="/globalmessage" method="post" FormName="globalmessage" Model="GlobalMessageForm" OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="HandleInvalidSubmit">
                 <FormContent>
                     <DataAnnotationsValidator />
                     <ValidationSummary />
@@ -48,11 +48,7 @@
         Logger.LogInformation("Hello from GlobalMessage.HandleValidSubmit()");
 
         var alertModel = new Models.Alert(this.GlobalMessageForm.Message!);
-        var alertDictionary = new Dictionary<string, object?>
-                                {
-                                    { "AlertModel", alertModel },
-                                };
-        var html = await this.ComponentRenderer.GetAsHtmlAsync<AlertComponent>(alertDictionary);
+        var html = await this.ComponentRenderer.GetAlertAsHtmlAsync(alertModel);
 
         var alertMessage = new TurboStreamMessage
             {

@@ -97,6 +97,8 @@ public class Program
 
         app.UseRouting();
 
+        app.UseAntiforgery();
+
         app.UseSession();
 
         app.Use(async (context, next) =>

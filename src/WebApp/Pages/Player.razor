@@ -23,7 +23,7 @@ else
                             <div class="flex items-start">
                                 <div class="ml-3 w-0 flex-1">
                                     @* Accessibility-wise it's most likely better to just set HTML required attributes on the inputs but I want to have a sample of model validation in here too *@
-                                    <EditForm action="@(new Uri(this.NavigationManager.Uri).PathAndQuery)" method="post" Model="PlayerForm" OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="HandleInvalidSubmit">
+                                    <EditForm FormName="player" action="@(new Uri(this.NavigationManager.Uri).PathAndQuery)" method="post" Model="PlayerForm" OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="HandleInvalidSubmit">
                                         <FormContent>
                                             <DataAnnotationsValidator />
                                             <ValidationSummary />
@@ -142,7 +142,7 @@ else
                 TemplateInnerHtml = await this.ComponentRenderer.GetAsHtmlAsync<PlayerListItem>(new Dictionary<string, object?> { { "Player", match } }),
             };
 
-        var alert = await this.ComponentRenderer.GetAsHtmlAsync<AlertComponent>(new Dictionary<string, object?> { { "AlertModel", new Alert(match.Name + " was saved.") } });
+        var alert = await this.ComponentRenderer.GetAlertAsHtmlAsync(new Alert(match.Name + " was saved."));
         var alertMessage = new TurboStreamMessage
             {
                 Action = TurboStreamAction.Update,
