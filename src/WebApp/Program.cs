@@ -1,6 +1,4 @@
 ﻿using System.IO.Compression;
-using System.Runtime.CompilerServices;
-using System.Text;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Logging.Console;
@@ -12,10 +10,6 @@ namespace WebApp;
 
 public class Program
 {
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public static IServiceProvider ServiceProvider { get; private set; }
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
@@ -71,8 +65,6 @@ public class Program
 
         var app = builder.Build();
 
-        ServiceProvider = app.Services;
-
         logger.LogInformation("Starting the app");
 
         app.UseResponseCompression();
@@ -115,7 +107,7 @@ public class Program
             await next();
         });
 
-        app.MapRazorComponents<App>();
+        app.MapRazorComponents<Components.App>();
 
         ////app.Use(async (context, next) =>
         ////{

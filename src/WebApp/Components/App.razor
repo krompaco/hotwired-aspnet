@@ -25,7 +25,7 @@
     <HeadOutlet></HeadOutlet>
 </head>
 <body class="h-full">
-    <Router AppAssembly="@typeof(App).Assembly">
+    @* <Router AppAssembly="@typeof(App).Assembly">
         <Found Context="routeData">
             <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
         </Found>
@@ -35,6 +35,12 @@
                 <p class="my-10" role="alert">Sorry, there's nothing at this address.</p>
             </LayoutView>
         </NotFound>
+    </Router> *@
+    <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
+            <RouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)" />
+        </Found>
     </Router>
+
 </body>
 </html>

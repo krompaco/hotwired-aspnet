@@ -1,9 +1,8 @@
 ﻿using Krompaco.AspNetCore.Hotwired.TurboStreams;
 using Microsoft.AspNetCore.Mvc;
+using WebApp.Components.Pages;
 using WebApp.Models;
-using WebApp.Pages;
 using WebApp.Services;
-using WebApp.Shared;
 
 namespace WebApp.Controllers;
 
