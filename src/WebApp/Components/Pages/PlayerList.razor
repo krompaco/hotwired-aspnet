@@ -1,0 +1,54 @@
+@page "/playerlist"
+
+@inject ILogger<PlayerList> Logger
+@inject SiteComponentRenderer ComponentRenderer
+@inject NavigationManager NavigationManager
+@inject IHttpContextAccessor HttpContextAccessor
+@inject WebAppDatabase WebAppDatabase
+
+<PageTitle>Player list page</PageTitle>
+
+<Content>
+    <p>
+        <a class="link-primary" href="/">Index page</a>
+    </p>
+
+    <h1 class="font-semibold tracking-tight text-3xl mt-4">Player list page</h1>
+
+    <p class="mt-5">A page showing some capabilities and a smooth way of using Razor Components to keep markup DRY.</p>
+
+    <div class="bg-white rounded shadow p-4 mt-10">
+        <h1 class="font-semibold tracking-tight text-xl">Players "database" example</h1>
+
+        <p class="mt-2">This page has examples of Turbo Stream messages.</p>
+
+        <p class="mt-2">
+            <a class="link-primary" href="/player?id=@Guid.Empty.ToString("D")" data-turbo-frame="js-player-form">Add new player</a>
+        </p>
+
+        <PlayerListComponent AllPlayers="this.AllPlayers" />
+
+        <turbo-frame id="js-player-form" aria-live="polite"></turbo-frame>
+    </div>
+</Content>
+
+@code {
+    public List<PlayerFormModel> AllPlayers { get; set; }
+
+    private string sessionKey;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Logger.LogInformation("Hello from PlayerList.OnInitialized()");
+
+        this.sessionKey = this.HttpContextAccessor.HttpContext.Session.Id + nameof(PlayerList);
+
+        if (this.HttpContextAccessor.HttpContext!.Request.IsPost())
+        {
+            return;
+        }
+
+        // Do stuff on GET
+        this.AllPlayers = this.WebAppDatabase.Get<List<PlayerFormModel>>(this.sessionKey);
+    }
+}

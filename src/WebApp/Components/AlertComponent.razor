@@ -1,11 +1,9 @@
-﻿@model Alert
-
-<div class="fixed inset-x-0 top-0 flex items-end justify-right px-4 py-6 sm:p-6 justify-end z-30 pointer-events-none">
-    <div data-controller="alert" data-alert-dismiss-after-value="2500" data-alert-show-class="translate-x-0 opacity-100" data-alert-hide-class="translate-x-full opacity-0" class="max-w-sm w-full shadow-lg px-4 py-3 relative @Html.Raw(Model.ColorClasses) border-l-4 text-white pointer-events-auto transition translate-x-full transform ease-in-out duration-1000 opacity-0">
+﻿<div class="fixed inset-x-0 top-0 flex items-end justify-right px-4 py-6 sm:p-6 justify-end z-30 pointer-events-none">
+    <div data-controller="alert" data-alert-dismiss-after-value="2500" data-alert-show-class="translate-x-0 opacity-100" data-alert-hide-class="translate-x-full opacity-0" class="max-w-sm w-full shadow-lg px-4 py-3 relative @this.AlertModel?.ColorClasses border-l-4 text-white pointer-events-auto transition translate-x-full transform ease-in-out duration-1000 opacity-0">
         <div class="p-2">
             <div class="flex items-center">
                 <div class="ml-3 w-0 flex-1 pt-0.5">
-                    <p class="text-xs sm:text-sm leading-5 font-medium">@Model.Message</p>
+                    <p class="text-xs sm:text-sm leading-5 font-medium">@this.AlertModel?.Message</p>
                 </div>
                 <div class="ml-4 flex-shrink-0 flex">
                     <button data-action="alert#close" class="inline-flex text-white focus:outline-none focus:text-gray-300">
@@ -16,3 +14,8 @@
         </div>
     </div>
 </div>
+
+@code {
+    [Parameter]
+    public Models.Alert? AlertModel { get; set; }
+}

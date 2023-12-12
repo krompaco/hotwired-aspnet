@@ -1,0 +1,16 @@
+<ol id="js-player-list" class="list-decimal list-inside">
+    @if (this.AllPlayers != null)
+    {
+        @foreach (var player in this.AllPlayers.OrderBy(x => x.Ranking))
+        {
+            <li id="js-player-list-item-@player.Id" class="mt-4">
+                <PlayerListItem Player="@player" />
+            </li>
+        }
+    }
+</ol>
+
+@code {
+    [Parameter]
+    public List<PlayerFormModel>? AllPlayers { get; set; }
+}

@@ -1,0 +1,62 @@
+@page "/globalmessage"
+
+@inject ILogger<GlobalMessage> Logger
+@inject SiteComponentRenderer ComponentRenderer
+@inject IHubContext<AppHub> Hub
+@inject IHttpContextAccessor HttpContextAccessor;
+
+<PageTitle>Global message form page</PageTitle>
+
+<Content>
+    <div class="bg-white rounded shadow p-4">
+        <h1 class="font-semibold tracking-tight text-xl">Turbo frame in other page test</h1>
+
+        <p class="mt-2">This page is typically not used on it's own. The Turbo Frame starts after this text.</p>
+
+        <turbo-frame id="js-global-message-form" aria-live="polite">
+            <EditForm action="/globalmessage" method="post" FormName="globalmessage" Model="GlobalMessageForm" OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="HandleInvalidSubmit">
+                <FormContent>
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+                    <div>
+                        <LabelFromDisplayName For="@(() => GlobalMessageForm.Message)" ForId="message-1" />
+                        <InputText @bind-Value="GlobalMessageForm.Message" id="message-1" class="mt-2" type="text" />
+                    </div>
+                    <div>
+                        <button type="submit" class="button-primary">Send message</button>
+                    </div>
+                </FormContent>
+            </EditForm>
+        </turbo-frame>
+    </div>
+</Content>
+
+@code {
+    [SupplyParameterFromForm]
+    protected GlobalMessageFormModel GlobalMessageForm { get; set; } = new();
+
+    protected async Task HandleInvalidSubmit()
+    {
+        Logger.LogInformation("Hello from GlobalMessage.HandleInvalidSubmit()");
+
+        // This follows the recommendation to set status = 422 for validation errors
+        this.HttpContextAccessor.HttpContext?.Response.SetTurboValidationErrorStatus(this.HttpContextAccessor.HttpContext.Request);
+    }
+
+    protected async Task HandleValidSubmit()
+    {
+        Logger.LogInformation("Hello from GlobalMessage.HandleValidSubmit()");
+
+        var alertModel = new Models.Alert(this.GlobalMessageForm.Message!);
+        var html = await this.ComponentRenderer.GetAlertAsHtmlAsync(alertModel);
+
+        var alertMessage = new TurboStreamMessage
+            {
+                Action = TurboStreamAction.Update,
+                Target = "js-alert-target",
+                TemplateInnerHtml = html,
+            };
+
+        await this.Hub.Clients.All.SendAsync("GlobalMessageReceived", alertMessage.ToString());
+    }
+}

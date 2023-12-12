@@ -26,6 +26,22 @@
 	.turbo-progress-bar {
 		@apply h-2 bg-gray-200;
 	}
+
+	/* Blazor default form validation styles */
+	ul.validation-errors {
+		@apply text-red-600 marker:text-red-400 list-disc pl-5 space-y-1;
+	}
+
+	/* ul.validation-errors > li.validation-message {
+	} */
+
+	div.validation-message {
+		@apply text-red-600 mt-1;
+	}
+
+	.invalid {
+		@apply ring-2 ring-red-600;
+	}
 }
 
 @tailwind utilities;

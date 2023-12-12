@@ -1,0 +1,21 @@
+@if (this.Player != null)
+{
+    <h2 class="font-extrabold inline">
+        @this.Player.Name <span class="font-medium text-gray-600">#@this.Player.Ranking</span>
+    </h2>
+
+    <div class="flex mt-2 space-x-2 items-center">
+        <a class="link-primary" href="/player?id=@this.Player.Id" data-turbo-frame="js-player-form">
+            Edit <span class="sr-only">@this.Player.Name</span>
+        </a>
+        <form action="/forms/deleteplayer" method="post">
+            <input type="hidden" name="id" value="@this.Player.Id" />
+            <button class="link-primary" type="submit">Delete</button>
+        </form>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public PlayerFormModel? Player { get; set; }
+}

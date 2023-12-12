@@ -1,0 +1,12 @@
+<div class="min-h-full">
+    <main class="p-3 sm:p-10">
+        <div>
+            @this.ChildContent
+        </div>
+    </main>
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

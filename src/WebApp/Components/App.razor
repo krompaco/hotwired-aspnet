@@ -1,0 +1,46 @@
+@inject IHttpContextAccessor HttpContextAccessor;
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gray-100">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/dist/inter-var-latin.woff2" rel="preload" as="font" type="font/woff2" crossorigin="anonymous">
+
+    @if (this.HttpContextAccessor.HttpContext?.Items["csp-nonce"] != null)
+    {
+        <meta name="csp-nonce" content="@this.HttpContextAccessor.HttpContext.Items["csp-nonce"]">
+    }
+
+    @if (this.HttpContextAccessor.HttpContext?.Items["csrf-param"] != null)
+    {
+        <meta name="csrf-param" content="@this.HttpContextAccessor.HttpContext.Items["csrf-param"]">
+    }
+
+    <link rel="shortcut icon" href="/favicon.ico" type="image/ico">
+    <link href="/dist/styles.css" rel="stylesheet" data-turbo-track="reload">
+    <script src="/dist/main.js" async data-turbo-track="reload" suppress-error="BL9992"></script>
+
+    <meta name="description" content="Sample page of using Blazor United SSR, SignalR and Hotwired.dev stuff.">
+
+    <HeadOutlet></HeadOutlet>
+</head>
+<body class="h-full">
+    @* <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
+            <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+        </Found>
+        <NotFound>
+            <PageTitle>Not found</PageTitle>
+            <LayoutView Layout="@typeof(MainLayout)">
+                <p class="my-10" role="alert">Sorry, there's nothing at this address.</p>
+            </LayoutView>
+        </NotFound>
+    </Router> *@
+    <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
+            <RouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)" />
+        </Found>
+    </Router>
+
+</body>
+</html>

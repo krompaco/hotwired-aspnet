@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Net.Http.Headers;
 using WebApp.Hubs;
+using WebApp.Services;
 
 namespace WebApp;
 
@@ -23,12 +24,13 @@ public class Program
             options.IdleTimeout = TimeSpan.FromMinutes(20);
             options.Cookie.HttpOnly = true;
             options.Cookie.IsEssential = true;
+            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
         });
 
         builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 
-        builder.Services.AddScoped<RazorViewComponentToStringRenderer>();
+        builder.Services.AddSingleton<SiteComponentRenderer>();
 
         builder.Services.AddResponseCompression(options =>
         {
@@ -42,44 +44,39 @@ public class Program
             options.Level = CompressionLevel.Optimal;
         });
 
-        builder.Services.AddRazorPages()
-            .AddSessionStateTempDataProvider()
+        builder.Services.AddRazorComponents();
+
+        builder.Services
+            .AddControllers()
             .AddViewOptions(options => { options.HtmlHelperOptions.ClientValidationEnabled = false; });
 
         builder.Services.AddSignalR();
 
         using var loggerFactory = LoggerFactory.Create(builderInside =>
         {
-            builderInside.AddSimpleConsole(i => i.ColorBehavior = LoggerColorBehavior.Disabled);
+            builderInside.AddSimpleConsole(i => i.ColorBehavior = LoggerColorBehavior.Default);
         });
 
         var logger = loggerFactory.CreateLogger<Program>();
+
+        // Setup a fake data store
+        var db = new WebAppDatabase();
+        builder.Services.AddSingleton(db);
 
         var app = builder.Build();
 
         logger.LogInformation("Starting the app");
 
-        app.Use(async (context, next) =>
-        {
-            var nonce = Guid.NewGuid().ToString("N");
-            context.Items["csp-nonce"] = nonce;
-
-            var param = Guid.NewGuid().ToString("N");
-            context.Items["csrf-param"] = param;
-
-            await next();
-        });
-
         app.UseResponseCompression();
 
-        if (app.Environment.IsDevelopment())
-        {
-            app.UseDeveloperExceptionPage();
-        }
-        else
-        {
-            app.UseExceptionHandler("/Error");
-        }
+        ////if (app.Environment.IsDevelopment())
+        ////{
+        app.UseDeveloperExceptionPage();
+        ////}
+        ////else
+        ////{
+        ////    app.UseExceptionHandler("/Error");
+        ////}
 
         app.UseStaticFiles(new StaticFileOptions
         {
@@ -90,13 +87,41 @@ public class Program
             },
         });
 
-        app.UseSession();
-
-        app.UseStatusCodePagesWithReExecute("/Error", "?statusCode={0}");
-
         app.UseRouting();
 
-        app.MapRazorPages();
+        app.UseAntiforgery();
+
+        app.UseSession();
+
+        app.Use(async (context, next) =>
+        {
+            var nonce = Guid.NewGuid().ToString("N");
+            context.Items["csp-nonce"] = nonce;
+
+            var param = Guid.NewGuid().ToString("N");
+            context.Items["csrf-param"] = param;
+
+            // Hack to get session cookie with ID
+            context.Session.SetString("csrf-set-at", DateTime.UtcNow.ToString("HH:mm:ss"));
+
+            await next();
+        });
+
+        app.MapRazorComponents<Components.App>();
+
+        ////app.Use(async (context, next) =>
+        ////{
+        ////    if (string.IsNullOrEmpty(context.Response.Headers.ContentType.ToString()))
+        ////    {
+        ////        context.Response.Headers.ContentType = "text/html; charset=UTF-8";
+        ////        context.Response.Headers.CacheControl = "no-cache, no-store";
+        ////        context.Response.Headers.Pragma = "no-cache";
+        ////    }
+
+        ////    await next();
+        ////});
+
+        app.MapDefaultControllerRoute();
 
         app.MapHub<AppHub>("/AppHub");
 

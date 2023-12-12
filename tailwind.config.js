@@ -2,10 +2,18 @@ const defaultTheme = require('tailwindcss/defaultTheme')
 
 module.exports = {
 	content: [
+		'./src/**/*.razor',
 		'./src/**/*.html',
 		'./src/**/*.cshtml',
 		'./src/**/*.cs',
 		'./src/**/*_controller.js',
+	],
+	safelist: [
+		'turbo-progress-bar',
+		'validation-errors',
+		'validation-message',
+		'invalid',
+		'valid',
 	],
 	theme: {
 		extend: {

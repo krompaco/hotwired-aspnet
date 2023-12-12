@@ -1,0 +1,156 @@
+@page "/"
+
+@inject ILogger<Index> Logger
+@inject SiteComponentRenderer ComponentRenderer
+@inject IHttpContextAccessor HttpContextAccessor
+@inject WebAppDatabase WebAppDatabase
+
+<PageTitle>Index</PageTitle>
+
+<Content>
+    <h1 class="font-semibold tracking-tight text-3xl">Index</h1>
+
+    <p class="mt-5">A simple Blazor SSR app showing how to use some features from Turbo and Stimulus.</p>
+
+    <p class="mt-5">
+        <a href="https://github.com/krompaco/hotwired-aspnet/tree/feature/blazor-ssr" class="inline-flex items-center link-primary">
+            <svg class="flex-none mr-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"></path><path d="M9 18c-4.51 2-5-2-7-2"></path></svg>
+            <span class="flex-none">
+                Source code on GitHub
+            </span>
+        </a>
+    </p>
+
+    <div class="mt-10 bg-white rounded shadow p-4">
+        <h2 class="font-semibold tracking-tight text-xl">Turbo Streams and Frames showcase: Player Database</h2>
+        <p class="mt-2">A <a class="link-primary" href="/playerlist"><em class="font-bold not-italic">separate page</em> showing some capabilities</a> and a smooth way of using View Components to keep markup DRY.</p>
+    </div>
+
+    <div class="mt-10 bg-white rounded shadow p-4">
+        <h2 class="font-semibold tracking-tight text-xl">Very simple Stimulus example controller test</h2>
+        <div class="mt-2">
+            <p data-controller="example">Original content from server response.</p>
+        </div>
+        <p class="mt-2">I recommend learning more here: <a class="link-primary" href="https://github.com/excid3/tailwindcss-stimulus-components"><em class="font-bold not-italic">Tailwind CSS Stimulus Components</em> by excid3 on GitHub</a></p>
+    </div>
+
+    <div class="mt-10 bg-white rounded shadow p-4">
+        <h2 class="font-semibold tracking-tight text-xl">Turbo frame in other page SignalR test</h2>
+
+        <p class="mt-2">This form responds with a SignalR global message.</p>
+
+        <turbo-frame id="js-global-message-form" aria-live="polite" src="/globalmessage" loading="lazy">
+            <Spinner />
+        </turbo-frame>
+    </div>
+
+    <div class="mt-10 bg-white rounded shadow p-4">
+        <h2 class="font-semibold tracking-tight text-xl">Turbo frame in same page test</h2>
+
+        <p class="mt-2">This form posts and keeps the values in temp data so we can show them after a 303 redirect which is the recommendation.</p>
+
+        <turbo-frame id="js-turbo-frame-same-page" aria-live="polite">
+            @if (tempStoredForm == null)
+            {
+                <EditForm action="/" method="post" FormName="index" Model="IndexForm" OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="HandleInvalidSubmit">
+                    <FormContent>
+                        @* Accessibility-wise it's most likely better to just set HTML required attributes on the inputs but I want to have a sample of model validation in here too *@
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        <div>
+                            <LabelFromDisplayName For="@(() => IndexForm.Name)" ForId="name-1" />
+                            <InputText @bind-Value="IndexForm.Name" id="name-1" class="mt-2" type="text" />
+                            <ValidationMessage For="() => IndexForm.Name" />
+                        </div>
+                        <div>
+                            <LabelFromDisplayName For="@(() => IndexForm.Company)" ForId="company-1" />
+                            <InputText @bind-Value="IndexForm.Company" id="company-1" class="mt-2" type="text" />
+                            <ValidationMessage For="() => IndexForm.Company" />
+                        </div>
+                        <div>
+                            <button type="submit" class="button-primary">Submit form</button>
+                        </div>
+                    </FormContent>
+                </EditForm>
+            }
+
+            @if (tempStoredForm != null)
+            {
+                <h3 class="mt-2 text-green-700 text-lg">Hi <em class="font-bold not-italic">@(tempStoredForm.Name?.Trim())</em> from <em class="font-bold not-italic">@(tempStoredForm.Company?.Trim())</em>!</h3>
+
+                @if (htmlAlert != null)
+                {
+                    @((MarkupString)htmlAlert)
+                }
+
+                <p class="mt-2"><a href="/?action=new" class="link-primary">Enter new data</a></p>
+            }
+        </turbo-frame>
+    </div>
+
+    <div class="mt-10 bg-white rounded shadow p-4">
+        <h2 class="font-semibold tracking-tight text-xl">Turbo frame in other page test</h2>
+
+        <p class="mt-2">This form responds with Turbo Frame content from a <a class="link-primary" href="/turboframeexample">Turbo frame in other page</a>.</p>
+
+        <turbo-frame id="js-turbo-frame-other-page" aria-live="polite" src="/turboframeexample" loading="lazy">
+            <Spinner />
+        </turbo-frame>
+    </div>
+
+    <TypographyBlock />
+</Content>
+
+@code {
+    [SupplyParameterFromForm]
+    protected IndexFormModel IndexForm { get; set; } = new();
+
+    private IndexFormModel? tempStoredForm;
+
+    private string? htmlAlert;
+
+    private string sessionKey;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Logger.LogInformation("Hello from Index.OnInitialized()");
+
+        this.sessionKey = this.HttpContextAccessor.HttpContext?.Session.Id + nameof(Index);
+
+        if (this.HttpContextAccessor.HttpContext!.Request.IsPost())
+        {
+            return;
+        }
+
+        this.tempStoredForm = this.WebAppDatabase.Get<IndexFormModel>(sessionKey);
+
+        if (this.tempStoredForm != null)
+        {
+            this.WebAppDatabase.Remove(this.sessionKey);
+
+            if (this.HttpContextAccessor.HttpContext!.Request.IsTurbo())
+            {
+                var alertModel = new Models.Alert($"Hi {tempStoredForm?.Name?.Trim()} from {tempStoredForm?.Company?.Trim()}", AlertType.Information);
+                this.htmlAlert = await this.ComponentRenderer.GetAlertAsHtmlAsync(alertModel);
+            }
+        }
+    }
+
+    protected async Task HandleInvalidSubmit()
+    {
+        Logger.LogInformation("Hello from Index.HandleInvalidSubmit()");
+
+        // This follows the recommendation to set status = 422 for validation errors
+        this.HttpContextAccessor.HttpContext?.Response.SetTurboValidationErrorStatus(this.HttpContextAccessor.HttpContext.Request);
+    }
+
+    protected async Task HandleValidSubmit()
+    {
+        Logger.LogInformation("Hello from Index.HandleValidSubmit()");
+
+        this.WebAppDatabase.Set<IndexFormModel>(this.sessionKey, this.IndexForm);
+
+        // This redirects with 303 which is recommended for both Turbo page and frame posts
+        this.HttpContextAccessor.HttpContext?.Response.SetTurboRedirectStatus("/");
+    }
+}

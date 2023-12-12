@@ -1,0 +1,115 @@
+@page "/turboframeexample"
+@using System.Text.Json;
+
+@inject ILogger<TurboFrameExample> Logger
+@inject SiteComponentRenderer ComponentRenderer
+@inject IHttpContextAccessor HttpContextAccessor
+@inject WebAppDatabase WebAppDatabase
+
+<PageTitle>Turbo frame example page</PageTitle>
+
+<Content>
+    <div class="bg-white rounded shadow p-4">
+        <h1 class="font-semibold tracking-tight text-xl">Turbo frame in other page test</h1>
+
+        <p class="mt-2">This page is typically not used on it's own. The Turbo Frame starts after this text.</p>
+
+        <turbo-frame id="js-turbo-frame-other-page" aria-live="polite">
+            @if (tempStoredForm == null)
+            {
+                @* Accessibility-wise it's most likely better to just set HTML required attributes on the inputs but I want to have a sample of model validation in here too *@
+                <EditForm action="/turboframeexample" FormName="turboframeexample" method="post" Model="TurboFrameExampleForm" OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="HandleInvalidSubmit">
+                    <FormContent>
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        <div>
+                            <LabelFromDisplayName For="@(() => TurboFrameExampleForm.Email)" ForId="email-1" />
+                            <InputText @bind-Value="TurboFrameExampleForm.Email" id="email-1" class="mt-2" type="email" />
+                            <ValidationMessage For="() => TurboFrameExampleForm.Email" />
+                        </div>
+                        <div>
+                            <div class="relative flex items-start pl-1">
+                                <div class="flex items-center h-5">
+                                    <InputCheckbox @bind-Value="TurboFrameExampleForm.Accept" id="accept-1" class="focus:ring-congress-blue h-4 w-4 text-blue-600 border-gray-500 rounded" />
+                                </div>
+                                <div class="ml-2">
+                                    <label for="accept-1" class="font-medium text-gray-700">Yes, I accept the terms and conditions.</label>
+                                </div>
+                            </div>
+                            <ValidationMessage For="() => TurboFrameExampleForm.Accept" />
+                        </div>
+                        <div>
+                            <button type="submit" class="button-primary">Submit form</button>
+                        </div>
+                    </FormContent>
+                </EditForm>
+            }
+
+            @if (tempStoredForm != null)
+            {
+                <h3 class="mt-2 text-green-700 text-lg">Hi <em class="font-bold not-italic">@(tempStoredForm.Email?.Trim())</em>!</h3>
+
+                @if (htmlAlert != null)
+                {
+                    @((MarkupString)htmlAlert)
+                }
+
+                <p class="mt-2"><a href="/turboframeexample?action=new" class="link-primary">Enter new data</a></p>
+            }
+        </turbo-frame>
+    </div>
+</Content>
+
+@code {
+    [SupplyParameterFromForm]
+    protected TurboFrameExampleFormModel TurboFrameExampleForm { get; set; } = new();
+
+    private TurboFrameExampleFormModel? tempStoredForm;
+
+    private string? htmlAlert;
+
+    private string sessionKey;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Logger.LogInformation("Hello from Index.OnInitialized()");
+
+        this.sessionKey = this.HttpContextAccessor.HttpContext?.Session.Id + nameof(TurboFrameExample);
+
+        if (this.HttpContextAccessor.HttpContext!.Request.IsPost())
+        {
+            return;
+        }
+
+        this.tempStoredForm = this.WebAppDatabase.Get<TurboFrameExampleFormModel>(this.sessionKey);
+
+        if (this.tempStoredForm != null)
+        {
+            this.WebAppDatabase.Remove(this.sessionKey);
+
+            if (this.HttpContextAccessor.HttpContext!.Request.IsTurbo())
+            {
+                var alertModel = new Models.Alert($"Hi {this.tempStoredForm?.Email?.Trim()}!");
+                this.htmlAlert = await this.ComponentRenderer.GetAlertAsHtmlAsync(alertModel);
+            }
+        }
+    }
+
+    protected async Task HandleInvalidSubmit()
+    {
+        Logger.LogInformation("Hello from TurboFrameExample.HandleInvalidSubmit()");
+
+        // This follows the recommendation to set status = 422 for validation errors
+        this.HttpContextAccessor.HttpContext?.Response.SetTurboValidationErrorStatus(this.HttpContextAccessor.HttpContext.Request);
+    }
+
+    protected async Task HandleValidSubmit()
+    {
+        Logger.LogInformation("Hello from TurboFrameExample.HandleValidSubmit()");
+
+        this.WebAppDatabase.Set<TurboFrameExampleFormModel>(this.sessionKey, this.TurboFrameExampleForm);
+
+        // This redirects with 303 which is recommended for both Turbo page and frame posts
+        this.HttpContextAccessor.HttpContext?.Response.SetTurboRedirectStatus("/turboframeexample");
+    }
+}
